@@ -109,7 +109,9 @@ export default function SignUp() {
               variant="secondary"
               onPress={onGoogle}
               loading={googleLoading}
-              icon={<Ionicons name="logo-google" size={18} color={colors.primary} />}
+              icon={
+                <Ionicons name="logo-google" size={18} color={colors.primary} />
+              }
             />
             <Link href="/(auth)/sign-in" style={styles.link}>
               כבר יש לכם חשבון? התחברות

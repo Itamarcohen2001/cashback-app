@@ -91,7 +91,8 @@ export async function signInWithGoogle(): Promise<void> {
 
   const code = new URL(result.url).searchParams.get("code");
   if (code) {
-    const { error: exchangeErr } = await supabase.auth.exchangeCodeForSession(code);
+    const { error: exchangeErr } =
+      await supabase.auth.exchangeCodeForSession(code);
     if (exchangeErr) throw exchangeErr;
   }
 }
