@@ -16,11 +16,12 @@ import { Button, Card, Input } from "@/ui";
 import { colors, font, spacing } from "@/theme";
 
 export default function SignIn() {
-  const { signIn } = useAuth();
+  const { signIn, signInWithGoogle } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
 
   async function onSubmit() {
     setError(null);
@@ -31,6 +32,18 @@ export default function SignIn() {
       setError("התחברות נכשלה. בדקו את הפרטים ונסו שוב.");
     } finally {
       setLoading(false);
+    }
+  }
+
+  async function onGoogle() {
+    setError(null);
+    setGoogleLoading(true);
+    try {
+      await signInWithGoogle();
+    } catch (e: any) {
+      setError(e?.message ?? "התחברות Google נכשלה.");
+    } finally {
+      setGoogleLoading(false);
     }
   }
 
@@ -82,6 +95,18 @@ export default function SignIn() {
             />
             {error ? <Text style={styles.error}>{error}</Text> : null}
             <Button label="התחברות" onPress={onSubmit} loading={loading} />
+            <View style={styles.divider}>
+              <View style={styles.divLine} />
+              <Text style={styles.divText}>או</Text>
+              <View style={styles.divLine} />
+            </View>
+            <Button
+              label="המשך עם Google"
+              variant="secondary"
+              onPress={onGoogle}
+              loading={googleLoading}
+              icon={<Ionicons name="logo-google" size={18} color={colors.primary} />}
+            />
             <Link href="/(auth)/sign-up" style={styles.link}>
               אין לכם חשבון? הרשמה
             </Link>
@@ -124,6 +149,9 @@ const styles = StyleSheet.create({
     textAlign: "right",
   },
   error: { color: colors.danger, textAlign: "right" },
+  divider: { flexDirection: "row", alignItems: "center", gap: spacing.md },
+  divLine: { flex: 1, height: 1, backgroundColor: colors.border },
+  divText: { color: colors.textMuted, fontSize: font.sm, fontWeight: "600" },
   link: {
     color: colors.primary,
     textAlign: "center",
