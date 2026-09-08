@@ -1,0 +1,137 @@
+import { useState } from "react";
+import {
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
+import { Link } from "expo-router";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { Ionicons } from "@expo/vector-icons";
+import { useAuth } from "@/context/AuthContext";
+import { Button, Card, Input } from "@/ui";
+import { colors, font, spacing } from "@/theme";
+
+export default function SignUp() {
+  const { signUp } = useAuth();
+  const [fullName, setFullName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [notice, setNotice] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  async function onSubmit() {
+    setError(null);
+    setNotice(null);
+    if (password.length < 6) {
+      setError("הסיסמה חייבת להכיל לפחות 6 תווים.");
+      return;
+    }
+    setLoading(true);
+    try {
+      await signUp(email.trim(), password, fullName.trim());
+      setNotice("נשלח אימייל אימות. אשרו אותו ואז התחברו.");
+    } catch (e: any) {
+      setError("ההרשמה נכשלה. ייתכן שהאימייל כבר בשימוש.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  return (
+    <SafeAreaView style={styles.safe}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
+        style={{ flex: 1 }}
+      >
+        <ScrollView
+          contentContainerStyle={styles.container}
+          keyboardShouldPersistTaps="handled"
+        >
+          <View style={styles.hero}>
+            <View style={styles.logoBadge}>
+              <Ionicons name="wallet" size={34} color={colors.textInverse} />
+            </View>
+            <Text style={styles.logo}>CashyCash</Text>
+            <Text style={styles.tagline}>הצטרפו והתחילו לצבור קאשבק.</Text>
+          </View>
+
+          <Card style={{ gap: spacing.lg }}>
+            <Text style={styles.title}>הרשמה</Text>
+            <Input
+              label="שם מלא"
+              value={fullName}
+              onChangeText={setFullName}
+              placeholder="ישראל ישראלי"
+            />
+            <Input
+              label="אימייל"
+              value={email}
+              onChangeText={setEmail}
+              autoCapitalize="none"
+              keyboardType="email-address"
+              placeholder="you@example.com"
+            />
+            <Input
+              label="סיסמה"
+              value={password}
+              onChangeText={setPassword}
+              secureTextEntry
+              placeholder="לפחות 6 תווים"
+            />
+            {error ? <Text style={styles.error}>{error}</Text> : null}
+            {notice ? <Text style={styles.notice}>{notice}</Text> : null}
+            <Button label="יצירת חשבון" onPress={onSubmit} loading={loading} />
+            <Link href="/(auth)/sign-in" style={styles.link}>
+              כבר יש לכם חשבון? התחברות
+            </Link>
+          </Card>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
+  );
+}
+
+const styles = StyleSheet.create({
+  safe: { flex: 1, backgroundColor: colors.bg },
+  container: {
+    padding: spacing.xl,
+    gap: spacing.xl,
+    flexGrow: 1,
+    justifyContent: "center",
+  },
+  hero: { alignItems: "center", gap: spacing.sm },
+  logoBadge: {
+    width: 76,
+    height: 76,
+    borderRadius: 24,
+    backgroundColor: colors.primary,
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: spacing.sm,
+    shadowColor: colors.primary,
+    shadowOpacity: 0.4,
+    shadowRadius: 18,
+    shadowOffset: { width: 0, height: 10 },
+    elevation: 8,
+  },
+  logo: { fontSize: font.xxxl, fontWeight: "900", color: colors.text },
+  tagline: { fontSize: font.md, color: colors.textMuted },
+  title: {
+    fontSize: font.xl,
+    fontWeight: "800",
+    color: colors.text,
+    textAlign: "right",
+  },
+  error: { color: colors.danger, textAlign: "right" },
+  notice: { color: colors.success, textAlign: "right" },
+  link: {
+    color: colors.primary,
+    textAlign: "center",
+    fontWeight: "700",
+    fontSize: font.md,
+  },
+});

@@ -1,0 +1,30 @@
+{
+  "expo": {
+    "name": "CashyCash",
+    "slug": "cashycash",
+    "scheme": "cashycash",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.cashycash.app"
+    },
+    "android": {
+      "package": "com.cashycash.app",
+      "edgeToEdgeEnabled": true
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "single"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-web-browser"
+    ],
+    "extra": {
+      "router": {}
+    }
+  }
+}
