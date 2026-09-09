@@ -53,6 +53,8 @@ export interface Store {
   network?: string | null;
   /** מזהה המפרסם/ההצעה ברשת השותפים. */
   network_offer_id?: string | null;
+  /** האם שיעור הקאשבק משתנה בין פריטים (מציגים "עד"). */
+  variable?: boolean | null;
 }
 
 export type CashbackStatus = "pending" | "confirmed" | "paid" | "rejected";

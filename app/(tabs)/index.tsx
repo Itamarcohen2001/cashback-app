@@ -15,7 +15,8 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { useAuth } from "@/context/AuthContext";
 import { fetchStores } from "@/lib/cashback";
-import { formatCashbackLabel } from "@/lib/format";
+import { formatUserCashback } from "@/lib/format";
+import { getRecentStoreIds } from "@/lib/recent";
 import { Store } from "@/lib/types";
 import { GradientCard, StoreLogo } from "@/ui";
 import { colors, font, gradients, radius, rtl, shadow, spacing } from "@/theme";
@@ -29,6 +30,7 @@ export default function StoresScreen() {
   const [error, setError] = useState<string | null>(null);
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState<string | null>(null);
+  const [recentIds, setRecentIds] = useState<string[]>([]);
 
   const load = useCallback(async () => {
     setError(null);
@@ -44,6 +46,7 @@ export default function StoresScreen() {
   useFocusEffect(
     useCallback(() => {
       load();
+      getRecentStoreIds().then(setRecentIds);
     }, [load]),
   );
 
@@ -65,14 +68,13 @@ export default function StoresScreen() {
     });
   }, [stores, query, category]);
 
-  // חנויות מומלצות: הקאשבק הגבוה ביותר.
-  const featured = useMemo(
-    () =>
-      [...stores]
-        .sort((a, b) => b.cashback_value - a.cashback_value)
-        .slice(0, 8),
-    [stores],
-  );
+  // המומלצות שלך: חנויות שנצפו/נעשה בהן שימוש לאחרונה.
+  const featured = useMemo(() => {
+    const byId = new Map(stores.map((s) => [s.id, s]));
+    return recentIds
+      .map((id) => byId.get(id))
+      .filter((s): s is Store => Boolean(s));
+  }, [stores, recentIds]);
 
   return (
     <SafeAreaView style={styles.safe} edges={["top"]}>
@@ -126,7 +128,7 @@ export default function StoresScreen() {
 
             {featured.length > 0 && !query && !category ? (
               <View style={{ gap: spacing.sm }}>
-                <Text style={styles.sectionTitle}>מומלצות 🔥</Text>
+                <Text style={styles.sectionTitle}>נצפו לאחרונה 👀</Text>
                 <ScrollView
                   horizontal
                   showsHorizontalScrollIndicator={false}
@@ -144,7 +146,7 @@ export default function StoresScreen() {
                       </Text>
                       <View style={styles.cashPill}>
                         <Text style={styles.cashPillText}>
-                          {formatCashbackLabel(s.cashback_type, s.cashback_value)}
+                          {formatUserCashback(s)}
                         </Text>
                       </View>
                     </Pressable>
@@ -234,7 +236,7 @@ export default function StoresScreen() {
             </View>
             <View style={styles.cashPill}>
               <Text style={styles.cashPillText}>
-                {formatCashbackLabel(item.cashback_type, item.cashback_value)}
+                {formatUserCashback(item)}
               </Text>
             </View>
             <View style={styles.chevWrap}>

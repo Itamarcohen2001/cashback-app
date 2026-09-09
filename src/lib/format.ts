@@ -13,10 +13,33 @@ export function formatMoney(amount: number): string {
   return `\u2066${ils.format(amount ?? 0)} \u20AA\u2069`;
 }
 
-/** תיאור קריא של תנאי הקאשבק בחנות. */
+/** תיאור קריא של תנאי הקאשבק בחנות (שיעור העמלה הגולמי). */
 export function formatCashbackLabel(type: CashbackType, value: number): string {
   if (type === "percent") return `${value}% קאשבק`;
   return `${formatMoney(value)} קאשבק`;
+}
+
+/** מעגל אחוז לתצוגה נעימה (עד ספרה אחת אחרי הנקודה, בלי .0 מיותר). */
+function roundRate(n: number): number {
+  return Math.round(n * 10) / 10;
+}
+
+/**
+ * הקאשבק שהמשתמש מקבל בפועל = שיעור העמלה × חלק המשתמש.
+ * לחנויות עם שיעור משתנה (variable) מוסיפים "עד".
+ */
+export function formatUserCashback(store: {
+  cashback_type: CashbackType;
+  cashback_value: number;
+  user_share_percent: number;
+  variable?: boolean | null;
+}): string {
+  const share = (store.user_share_percent ?? 0) / 100;
+  const prefix = store.variable ? "עד " : "";
+  if (store.cashback_type === "percent") {
+    return `${prefix}${roundRate(store.cashback_value * share)}% קאשבק`;
+  }
+  return `${prefix}${formatMoney(store.cashback_value * share)} קאשבק`;
 }
 
 /** תאריך קצר בעברית. */

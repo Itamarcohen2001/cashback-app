@@ -38,6 +38,7 @@ Deno.serve(async (req) => {
     affiliate_url_template: o.affiliateUrlTemplate,
     cashback_type: o.cashbackType,
     cashback_value: o.cashbackValue,
+    variable: o.variable,
     active: true,
   }));
 

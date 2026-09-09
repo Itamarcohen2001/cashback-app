@@ -18,6 +18,8 @@ export interface NetworkOffer {
   affiliateUrlTemplate: string;
   cashbackType: CashbackType;
   cashbackValue: number;
+  /** האם שיעור הקאשבק משתנה בין פריטים (מציגים "עד"). */
+  variable: boolean;
 }
 
 export type PostbackStatus = "pending" | "confirmed" | "rejected";
@@ -113,14 +115,16 @@ class AdmitadNetwork implements AffiliateNetwork {
       for (const c of results) {
         if (!c.gotolink) continue;
         const sep = c.gotolink.includes("?") ? "&" : "?";
+        const cat = mapCategory(c.categories?.[0]?.name);
         offers.push({
           externalId: String(c.id),
           name: c.name,
-          category: mapCategory(c.categories?.[0]?.name),
+          category: cat,
           description: null,
           logoUrl: c.image ?? null,
           baseUrl: c.site_url ?? "",
           affiliateUrlTemplate: `${c.gotolink}${sep}subid={SUBID}`,
+          variable: cat === "קניות כלליות",
           ...parseAdmitadRate(c),
         });
       }
@@ -161,11 +165,40 @@ class AdmitadNetwork implements AffiliateNetwork {
 function mapCategory(name?: string): string | null {
   if (!name) return null;
   const n = name.toLowerCase();
-  if (n.includes("маркетплейс") || n.includes("marketplace") || n.includes("кита")) return "קניות כלליות";
-  if (n.includes("одежд") || n.includes("fashion") || n.includes("clothing") || n.includes("мод")) return "אופנה";
-  if (n.includes("электрон") || n.includes("electronic") || n.includes("gadget")) return "אלקטרוניקה";
-  if (n.includes("travel") || n.includes("путеш") || n.includes("отел") || n.includes("hotel") || n.includes("flight")) return "טיסות ומלונות";
-  if (n.includes("health") || n.includes("beauty") || n.includes("здоров") || n.includes("красот")) return "בריאות וטבע";
+  if (
+    n.includes("маркетплейс") ||
+    n.includes("marketplace") ||
+    n.includes("кита")
+  )
+    return "קניות כלליות";
+  if (
+    n.includes("одежд") ||
+    n.includes("fashion") ||
+    n.includes("clothing") ||
+    n.includes("мод")
+  )
+    return "אופנה";
+  if (
+    n.includes("электрон") ||
+    n.includes("electronic") ||
+    n.includes("gadget")
+  )
+    return "אלקטרוניקה";
+  if (
+    n.includes("travel") ||
+    n.includes("путеш") ||
+    n.includes("отел") ||
+    n.includes("hotel") ||
+    n.includes("flight")
+  )
+    return "טיסות ומלונות";
+  if (
+    n.includes("health") ||
+    n.includes("beauty") ||
+    n.includes("здоров") ||
+    n.includes("красот")
+  )
+    return "בריאות וטבע";
   return null;
 }
 

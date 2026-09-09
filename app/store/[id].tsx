@@ -18,7 +18,8 @@ import {
   fetchStore,
   simulatePurchase,
 } from "@/lib/cashback";
-import { formatCashbackLabel, formatMoney } from "@/lib/format";
+import { formatMoney, formatUserCashback } from "@/lib/format";
+import { addRecentStore } from "@/lib/recent";
 import { Store } from "@/lib/types";
 import { Button, Card, GradientCard, Input, StoreLogo } from "@/ui";
 import { colors, font, gradients, radius, rtl, shadow, spacing } from "@/theme";
@@ -37,6 +38,7 @@ export default function StoreScreen() {
     (async () => {
       setStore(await fetchStore(id));
       setLoading(false);
+      addRecentStore(id); // מסמן כנצפה לקרוסלת "נצפו לאחרונה"
     })();
   }, [id]);
 
@@ -123,12 +125,10 @@ export default function StoreScreen() {
           ) : null}
           <View style={styles.cashbackPill}>
             <Text style={styles.cashbackPillText}>
-              {formatCashbackLabel(store.cashback_type, store.cashback_value)}
+              {formatUserCashback(store)}
             </Text>
           </View>
-          <Text style={styles.cashbackHint}>
-            מתוך זה חוזר אליכם עד {store.user_share_percent}%
-          </Text>
+          <Text style={styles.cashbackHint}>הקאשבק שלכם על כל רכישה</Text>
         </GradientCard>
 
         {store.description ? (
