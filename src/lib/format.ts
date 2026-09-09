@@ -72,7 +72,8 @@ const LOGO_OVERRIDES: Record<string, string> = {
   "alm.co.il": "https://www.alm.co.il/media/logo/stores/1/alm-logo.png",
   "ksp.co.il": "https://ksp.co.il/handle_cookies/assets/ksp_logo.webp",
   // icon.horse מחזיר צילום מסך של הלוגו עם תג האזור "WW" - עוקפים אותו עם פאביקון נקי.
-  "aliexpress.com": "https://www.google.com/s2/favicons?sz=128&domain=aliexpress.com",
+  "aliexpress.com":
+    "https://www.google.com/s2/favicons?sz=128&domain=aliexpress.com",
 };
 
 /**

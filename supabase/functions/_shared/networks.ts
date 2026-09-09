@@ -22,6 +22,19 @@ export interface NetworkOffer {
   variable: boolean;
 }
 
+/** קופון/דיל שנשלף מרשת השותפים ומסונכרן לטבלת coupons. */
+export interface NetworkCoupon {
+  externalId: string;
+  /** מזהה הקמפיין ברשת — ממופה ל-stores.network_offer_id כדי לקשר לחנות. */
+  campaignExternalId: string;
+  title: string;
+  code: string | null;
+  description: string | null;
+  /** תאריך תפוגה ב-ISO, אם קיים. */
+  expiresAt: string | null;
+  featured: boolean;
+}
+
 export type PostbackStatus = "pending" | "confirmed" | "rejected";
 
 /** אירוע המרה שמגיע מ-postback של רשת השותפים. */
@@ -40,6 +53,7 @@ export interface PostbackEvent {
 export interface AffiliateNetwork {
   readonly name: string;
   fetchOffers(): Promise<NetworkOffer[]>;
+  fetchCoupons(): Promise<NetworkCoupon[]>;
   parsePostback(url: URL, body: Record<string, unknown> | null): PostbackEvent;
 }
 
@@ -59,6 +73,18 @@ interface AdmitadCampaign {
   actions_detail?: { size?: string; rate?: string; name?: string }[];
 }
 
+interface AdmitadCoupon {
+  id: number;
+  name?: string;
+  promocode?: string | null;
+  discount?: string | null;
+  description?: string | null;
+  date_end?: string | null;
+  rating?: string | number | null;
+  advcampaign?: { id: number } | null;
+  campaign?: { id: number } | null;
+}
+
 class AdmitadNetwork implements AffiliateNetwork {
   readonly name = "admitad";
 
@@ -67,7 +93,7 @@ class AdmitadNetwork implements AffiliateNetwork {
   private websiteId = Deno.env.get("ADMITAD_WEBSITE_ID") ?? "";
   private scope = Deno.env.get("ADMITAD_SCOPE") ?? "advcampaigns_for_website";
 
-  private async token(): Promise<string> {
+  private async token(scope = this.scope): Promise<string> {
     if (!this.clientId || !this.clientSecret) {
       throw new Error("חסרים ADMITAD_CLIENT_ID / ADMITAD_CLIENT_SECRET");
     }
@@ -75,7 +101,7 @@ class AdmitadNetwork implements AffiliateNetwork {
     const body = new URLSearchParams({
       grant_type: "client_credentials",
       client_id: this.clientId,
-      scope: this.scope,
+      scope,
     });
     const res = await fetch(`${ADMITAD_API}/token/`, {
       method: "POST",
@@ -133,6 +159,48 @@ class AdmitadNetwork implements AffiliateNetwork {
       if (offset >= total || results.length === 0) break;
     }
     return offers;
+  }
+
+  async fetchCoupons(): Promise<NetworkCoupon[]> {
+    if (!this.websiteId) throw new Error("חסר ADMITAD_WEBSITE_ID");
+    const scope = Deno.env.get("ADMITAD_COUPONS_SCOPE") ?? "coupons_for_website";
+    const token = await this.token(scope);
+    const coupons: NetworkCoupon[] = [];
+    const limit = 100;
+    let offset = 0;
+
+    // מושכים את כל הקופונים המחוברים לאתר בעימוד.
+    while (true) {
+      const res = await fetch(
+        `${ADMITAD_API}/coupons/website/${this.websiteId}/?limit=${limit}&offset=${offset}`,
+        { headers: { Authorization: `Bearer ${token}` } },
+      );
+      if (!res.ok) {
+        throw new Error(
+          `Admitad coupons נכשל: ${res.status} ${await res.text()}`,
+        );
+      }
+      const data = await res.json();
+      const results: AdmitadCoupon[] = data.results ?? [];
+      for (const c of results) {
+        const campaignId = c.advcampaign?.id ?? c.campaign?.id;
+        if (!campaignId) continue;
+        const rating = c.rating != null ? Number(c.rating) : NaN;
+        coupons.push({
+          externalId: String(c.id),
+          campaignExternalId: String(campaignId),
+          title: c.name?.trim() || c.discount?.trim() || "מבצע",
+          code: c.promocode?.trim() || null,
+          description: c.description?.trim() || c.discount?.trim() || null,
+          expiresAt: c.date_end ?? null,
+          featured: !Number.isNaN(rating) && rating >= 4,
+        });
+      }
+      const total = data._meta?.count ?? coupons.length;
+      offset += limit;
+      if (offset >= total || results.length === 0) break;
+    }
+    return coupons;
   }
 
   parsePostback(url: URL, body: Record<string, unknown> | null): PostbackEvent {
