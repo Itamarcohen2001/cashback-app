@@ -72,7 +72,7 @@ npm run start          # רץ מיד במצב דמו, ללא הגדרות נוס
 
 1. **סנכרון חנויות** — הפונקציה `sync-stores` מושכת מ-Admitad את המפרסמים המחוברים,
    כולל תבנית קישור אמיתית (`gotolink` עם `{SUBID}`), ומעדכנת את טבלת `stores`.
-1a. **סנכרון קופונים** — הפונקציה `sync-coupons` מושכת מ-Admitad את הקופונים/דילים
+   1a. **סנכרון קופונים** — הפונקציה `sync-coupons` מושכת מ-Admitad את הקופונים/דילים
    המחוברים, מקשרת כל קופון לחנות דרך `network_offer_id`, ומעדכנת את טבלת `coupons`
    (upsert לפי `network` + `network_coupon_id`, כך שקופונים ידניים לא נדרסים).
 2. **קליק** — כשמשתמש מפעיל קאשבק, נרשם `click` עם `token`, והקישור נפתח כשה-`token`
@@ -117,6 +117,7 @@ select cron.schedule(
      ); $$
 );
 ```
+
 - **postback ב-Admitad:** הגדירו URL:
   `https://<ref>.supabase.co/functions/v1/postback?secret=<POSTBACK_SECRET>&subid={subid}&order_sum={order_sum}&payment_sum={payment_sum}&currency={currency}&status={status}&action_id={action_id}`
 

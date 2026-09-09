@@ -163,7 +163,8 @@ class AdmitadNetwork implements AffiliateNetwork {
 
   async fetchCoupons(): Promise<NetworkCoupon[]> {
     if (!this.websiteId) throw new Error("חסר ADMITAD_WEBSITE_ID");
-    const scope = Deno.env.get("ADMITAD_COUPONS_SCOPE") ?? "coupons_for_website";
+    const scope =
+      Deno.env.get("ADMITAD_COUPONS_SCOPE") ?? "coupons_for_website";
     const token = await this.token(scope);
     const coupons: NetworkCoupon[] = [];
     const limit = 100;
