@@ -1,11 +1,13 @@
-import { useCallback, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import {
   FlatList,
   Image,
   Pressable,
   RefreshControl,
+  ScrollView,
   StyleSheet,
   Text,
+  TextInput,
   View,
 } from "react-native";
 import { useFocusEffect, useRouter } from "expo-router";
@@ -22,6 +24,8 @@ export default function StoresScreen() {
   const [stores, setStores] = useState<Store[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [query, setQuery] = useState("");
+  const [category, setCategory] = useState<string | null>(null);
 
   const load = useCallback(async () => {
     setError(null);
@@ -40,10 +44,28 @@ export default function StoresScreen() {
     }, [load]),
   );
 
+  const categories = useMemo(() => {
+    const set = new Set<string>();
+    stores.forEach((s) => s.category && set.add(s.category));
+    return Array.from(set);
+  }, [stores]);
+
+  const filtered = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    return stores.filter((s) => {
+      const matchesCat = !category || s.category === category;
+      const matchesQuery =
+        !q ||
+        s.name.toLowerCase().includes(q) ||
+        (s.category?.toLowerCase().includes(q) ?? false);
+      return matchesCat && matchesQuery;
+    });
+  }, [stores, query, category]);
+
   return (
     <SafeAreaView style={styles.safe} edges={["top"]}>
       <FlatList
-        data={stores}
+        data={filtered}
         keyExtractor={(s) => s.id}
         contentContainerStyle={styles.list}
         showsVerticalScrollIndicator={false}
@@ -80,13 +102,60 @@ export default function StoresScreen() {
                 </View>
               </View>
             </GradientCard>
-            <Text style={styles.sectionTitle}>כל החנויות</Text>
+
+            <View style={styles.searchBar}>
+              <Ionicons name="search" size={20} color={colors.textMuted} />
+              <TextInput
+                value={query}
+                onChangeText={setQuery}
+                placeholder="חיפוש חנות…"
+                placeholderTextColor={colors.textMuted}
+                style={styles.searchInput}
+              />
+              {query ? (
+                <Ionicons
+                  name="close-circle"
+                  size={18}
+                  color={colors.textMuted}
+                  onPress={() => setQuery("")}
+                />
+              ) : null}
+            </View>
+
+            {categories.length > 0 ? (
+              <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={styles.chipsRow}
+              >
+                <Chip
+                  label="הכול"
+                  active={!category}
+                  onPress={() => setCategory(null)}
+                />
+                {categories.map((c) => (
+                  <Chip
+                    key={c}
+                    label={c}
+                    active={category === c}
+                    onPress={() => setCategory(c)}
+                  />
+                ))}
+              </ScrollView>
+            ) : null}
+
+            <Text style={styles.sectionTitle}>
+              {category ?? "כל החנויות"} ({filtered.length})
+            </Text>
           </View>
         }
         ListEmptyComponent={
           !loading ? (
             <Text style={styles.empty}>
-              {error ?? "אין חנויות זמינות עדיין."}
+              {error ??
+                (stores.length
+                  ? "לא נמצאו חנויות התואמות לחיפוש."
+                  : "אין חנויות זמינות עדיין.")}
             </Text>
           ) : null
         }
@@ -128,6 +197,27 @@ export default function StoresScreen() {
         )}
       />
     </SafeAreaView>
+  );
+}
+
+function Chip({
+  label,
+  active,
+  onPress,
+}: {
+  label: string;
+  active: boolean;
+  onPress: () => void;
+}) {
+  return (
+    <Pressable
+      onPress={onPress}
+      style={[styles.chip, active && styles.chipActive]}
+    >
+      <Text style={[styles.chipText, active && styles.chipTextActive]}>
+        {label}
+      </Text>
+    </Pressable>
   );
 }
 
@@ -179,6 +269,35 @@ const styles = StyleSheet.create({
     color: colors.text,
     textAlign: "right",
   },
+  searchBar: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: spacing.sm,
+    backgroundColor: colors.card,
+    borderRadius: radius.md,
+    paddingHorizontal: spacing.lg,
+    height: 50,
+    ...shadow.sm,
+  },
+  searchInput: {
+    flex: 1,
+    height: "100%",
+    fontSize: font.md,
+    color: colors.text,
+    textAlign: "right",
+  },
+  chipsRow: { gap: spacing.sm, paddingVertical: 2 },
+  chip: {
+    backgroundColor: colors.card,
+    borderRadius: radius.pill,
+    paddingVertical: spacing.sm,
+    paddingHorizontal: spacing.lg,
+    borderWidth: 1,
+    borderColor: colors.border,
+  },
+  chipActive: { backgroundColor: colors.primary, borderColor: colors.primary },
+  chipText: { fontSize: font.sm, fontWeight: "700", color: colors.textMuted },
+  chipTextActive: { color: colors.textInverse },
   row: {
     flexDirection: "row",
     alignItems: "center",
