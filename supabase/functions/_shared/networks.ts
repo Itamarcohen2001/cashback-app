@@ -187,12 +187,13 @@ class AdmitadNetwork implements AffiliateNetwork {
         const campaignId = c.advcampaign?.id ?? c.campaign?.id;
         if (!campaignId) continue;
         const rating = c.rating != null ? Number(c.rating) : NaN;
+        const summary = summarizeCouponHe(c);
         coupons.push({
           externalId: String(c.id),
           campaignExternalId: String(campaignId),
-          title: c.name?.trim() || c.discount?.trim() || "מבצע",
+          title: summary.title,
           code: c.promocode?.trim() || null,
-          description: c.description?.trim() || c.discount?.trim() || null,
+          description: summary.description,
           expiresAt: c.date_end ?? null,
           featured: !Number.isNaN(rating) && rating >= 4,
         });
@@ -283,6 +284,51 @@ function parseAdmitadRate(c: AdmitadCampaign): {
     return { cashbackType: isFixed ? "fixed" : "percent", cashbackValue: rate };
   }
   return { cashbackType: "percent", cashbackValue: 5 };
+}
+
+/**
+ * בונה סיכום קצר בעברית לקופון מתוך השדות המובנים (במקום הטקסט הגולמי באנגלית/רוסית).
+ * מחזיר כותרת קצרה + תיאור מינימלי (קוד/תוקף) — "בלי הרבה מלל".
+ */
+function summarizeCouponHe(c: AdmitadCoupon): {
+  title: string;
+  description: string | null;
+} {
+  const blob = `${c.name ?? ""} ${c.discount ?? ""}`.trim();
+  const upTo = /up to|up-to|до\b|from\b|מעל|עד\b/i.test(blob);
+  const freeShip = /free ship|free deliver|бесплатн\w* доставк|משלוח חינם/i.test(
+    blob,
+  );
+
+  // אחוז הנחה (למשל 70%)
+  const pct = blob.match(/(\d{1,3})\s*%/);
+  // סכום קבוע עם מטבע (למשל $10 / 50₪)
+  const amount = blob.match(/([$€₪£])\s*(\d+[\d.,]*)|(\d+[\d.,]*)\s*([$€₪£])/);
+
+  let title: string;
+  if (pct) {
+    title = `${upTo ? "עד " : ""}${pct[1]}% הנחה`;
+  } else if (amount) {
+    const sym = amount[1] ?? amount[4] ?? "";
+    const num = amount[2] ?? amount[3] ?? "";
+    title = `${sym}${num} הנחה`;
+  } else if (freeShip) {
+    title = "משלוח חינם";
+  } else if (c.promocode) {
+    title = "קופון הנחה";
+  } else {
+    title = "מבצע";
+  }
+
+  const parts: string[] = [];
+  if (c.promocode) parts.push("בקוד קופון");
+  if (c.date_end) {
+    const d = new Date(c.date_end);
+    if (!Number.isNaN(d.getTime())) {
+      parts.push(`בתוקף עד ${d.toLocaleDateString("he-IL")}`);
+    }
+  }
+  return { title, description: parts.length ? parts.join(" · ") : null };
 }
 
 // ============================================================
