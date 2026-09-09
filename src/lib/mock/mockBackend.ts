@@ -11,6 +11,7 @@ import {
   Click,
   PayoutRequest,
   Store,
+  UserBrief,
 } from "../types";
 
 const STORAGE_KEY = "cashy_mock_db_v2";
@@ -20,6 +21,7 @@ interface MockUser {
   email: string;
   password: string;
   full_name: string | null;
+  phone: string | null;
   is_admin: boolean;
 }
 
@@ -135,6 +137,7 @@ function seed(): MockDb {
     email: "demo@cashy.app",
     password: "123456",
     full_name: "משתמש דמו",
+    phone: "050-1234567",
     is_admin: false,
   };
   const adminUser: MockUser = {
@@ -142,6 +145,7 @@ function seed(): MockDb {
     email: "admin@cashy.app",
     password: "admin123",
     full_name: "מנהל CashyCash",
+    phone: null,
     is_admin: true,
   };
 
@@ -212,8 +216,16 @@ function toAppUser(u: MockUser | undefined | null): AppUser | null {
     id: u.id,
     email: u.email,
     full_name: u.full_name,
+    phone: u.phone,
     is_admin: u.is_admin,
   };
+}
+
+// פרטי משתמש מקוצרים לתצוגת אדמין.
+function briefFor(d: MockDb, userId: string): UserBrief | undefined {
+  const u = d.users.find((x) => x.id === userId);
+  if (!u) return undefined;
+  return { full_name: u.full_name, email: u.email, phone: u.phone };
 }
 
 function notify(): void {
@@ -252,6 +264,7 @@ export async function signUp(
   email: string,
   password: string,
   fullName: string,
+  phone: string | null,
 ): Promise<void> {
   const d = await load();
   if (d.users.some((u) => u.email.toLowerCase() === email.toLowerCase())) {
@@ -262,6 +275,7 @@ export async function signUp(
     email,
     password,
     full_name: fullName || null,
+    phone: phone || null,
     is_admin: false,
   };
   d.users.push(user);
@@ -389,6 +403,7 @@ export async function adminListPendingTransactions(): Promise<
   const d = await load();
   return d.transactions
     .filter((t) => t.status === "pending")
+    .map((t) => ({ ...t, user: briefFor(d, t.user_id) }))
     .sort((a, b) => b.created_at.localeCompare(a.created_at));
 }
 
@@ -407,10 +422,7 @@ export async function adminSetTransactionStatus(
 export async function adminListPayouts(): Promise<PayoutRequest[]> {
   const d = await load();
   return d.payouts
-    .map((p) => ({
-      ...p,
-      user_email: d.users.find((u) => u.id === p.user_id)?.email,
-    }))
+    .map((p) => ({ ...p, user: briefFor(d, p.user_id) }))
     .sort((a, b) => b.created_at.localeCompare(a.created_at));
 }
 

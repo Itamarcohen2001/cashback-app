@@ -37,6 +37,9 @@ export default function ProfileScreen() {
             <View style={{ flex: 1, alignItems: "flex-start" }}>
               <Text style={styles.name}>{fullName}</Text>
               <Text style={styles.email}>{user?.email}</Text>
+              {user?.phone ? (
+                <Text style={styles.email}>{user.phone}</Text>
+              ) : null}
               {user?.is_admin ? (
                 <View style={styles.adminTag}>
                   <Ionicons

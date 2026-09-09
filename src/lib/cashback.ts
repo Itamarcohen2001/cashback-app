@@ -5,6 +5,7 @@ import {
   CashbackTransaction,
   PayoutRequest,
   Store,
+  UserBrief,
   WalletSummary,
 } from "./types";
 import * as mock from "./mock/mockBackend";
@@ -163,6 +164,25 @@ export async function requestPayout(
 
 // ===================== ניהול (Admin) =====================
 
+// מעשיר רשומות עם user_id בפרטי המשתמש (שם/אימייל/טלפון) מטבלת profiles.
+async function attachUsers<T extends { user_id: string; user?: UserBrief }>(
+  rows: T[],
+): Promise<T[]> {
+  const ids = [...new Set(rows.map((r) => r.user_id))];
+  if (ids.length === 0) return rows;
+  const { data } = await supabase
+    .from("profiles")
+    .select("id, full_name, email, phone")
+    .in("id", ids);
+  const map = new Map(
+    (data ?? []).map((p: any) => [
+      p.id,
+      { full_name: p.full_name, email: p.email, phone: p.phone } as UserBrief,
+    ]),
+  );
+  return rows.map((r) => ({ ...r, user: map.get(r.user_id) }));
+}
+
 export async function adminFetchPendingTransactions(): Promise<
   CashbackTransaction[]
 > {
@@ -173,7 +193,7 @@ export async function adminFetchPendingTransactions(): Promise<
     .eq("status", "pending")
     .order("created_at", { ascending: false });
   if (error) throw error;
-  return (data ?? []) as CashbackTransaction[];
+  return attachUsers((data ?? []) as CashbackTransaction[]);
 }
 
 export async function adminSetTransactionStatus(
@@ -198,7 +218,7 @@ export async function adminFetchPayouts(): Promise<PayoutRequest[]> {
     .select("*")
     .order("created_at", { ascending: false });
   if (error) throw error;
-  return (data ?? []) as PayoutRequest[];
+  return attachUsers((data ?? []) as PayoutRequest[]);
 }
 
 export async function adminMarkPayoutPaid(id: string): Promise<void> {

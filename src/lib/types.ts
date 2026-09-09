@@ -7,13 +7,24 @@ export interface AppUser {
   id: string;
   email: string;
   full_name: string | null;
+  /** מספר טלפון (לתשלום קאשבק בביט). */
+  phone: string | null;
   /** האם המשתמש הוא מנהל (בעל גישה לפאנל הניהול). */
   is_admin: boolean;
+}
+
+/** פרטי משתמש מקוצרים לתצוגת אדמין (מי מקבל את הקאשבק). */
+export interface UserBrief {
+  full_name: string | null;
+  email: string | null;
+  phone: string | null;
 }
 
 export interface Profile {
   id: string;
   full_name: string | null;
+  email: string | null;
+  phone: string | null;
   created_at: string;
 }
 
@@ -61,6 +72,8 @@ export interface CashbackTransaction {
   confirmed_at: string | null;
   /** מצורף ב-join עם טבלת stores. */
   store?: Pick<Store, "name" | "logo_url">;
+  /** פרטי המשתמש שמקבל את הקאשבק (מצורף בתצוגת אדמין). */
+  user?: UserBrief;
 }
 
 export interface Click {
@@ -82,8 +95,8 @@ export interface PayoutRequest {
   status: PayoutStatus;
   created_at: string;
   paid_at: string | null;
-  /** מצורף ב-join לתצוגת אדמין. */
-  user_email?: string;
+  /** פרטי המשתמש שמבקש את המשיכה (מצורף בתצוגת אדמין). */
+  user?: UserBrief;
 }
 
 export interface WalletSummary {

@@ -18,11 +18,12 @@ function mapSupabaseUser(u: User | null | undefined): AppUser | null {
     id: u.id,
     email: u.email ?? "",
     full_name: (u.user_metadata?.full_name as string) ?? null,
+    phone: (u.user_metadata?.phone as string) ?? null,
     is_admin: Boolean(u.user_metadata?.is_admin),
   };
 }
 
-// מוסיף את דגל הניהול מטבלת profiles (מקור האמת המאובטח).
+// מעשיר את המשתמש מטבלת profiles (דגל ניהול + פרטים עדכניים).
 async function withAdminFlag(
   u: User | null | undefined,
 ): Promise<AppUser | null> {
@@ -30,10 +31,15 @@ async function withAdminFlag(
   if (!base) return null;
   const { data } = await supabase
     .from("profiles")
-    .select("is_admin")
+    .select("is_admin, full_name, phone")
     .eq("id", base.id)
     .maybeSingle();
-  return { ...base, is_admin: Boolean(data?.is_admin) };
+  return {
+    ...base,
+    full_name: (data?.full_name as string) ?? base.full_name,
+    phone: (data?.phone as string) ?? base.phone,
+    is_admin: Boolean(data?.is_admin),
+  };
 }
 
 export async function getCurrentUser(): Promise<AppUser | null> {
@@ -60,12 +66,13 @@ export async function signUp(
   email: string,
   password: string,
   fullName: string,
+  phone: string,
 ): Promise<void> {
-  if (USE_MOCK) return mock.signUp(email, password, fullName);
+  if (USE_MOCK) return mock.signUp(email, password, fullName, phone || null);
   const { error } = await supabase.auth.signUp({
     email,
     password,
-    options: { data: { full_name: fullName } },
+    options: { data: { full_name: fullName, phone: phone || null } },
   });
   if (error) throw error;
 }

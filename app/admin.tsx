@@ -11,7 +11,7 @@ import {
   adminSetTransactionStatus,
 } from "@/lib/cashback";
 import { formatDate, formatMoney } from "@/lib/format";
-import { CashbackTransaction, PayoutRequest } from "@/lib/types";
+import { CashbackTransaction, PayoutRequest, UserBrief } from "@/lib/types";
 import { Badge, Button, Card } from "@/ui";
 import { colors, font, radius, spacing } from "@/theme";
 
@@ -110,9 +110,9 @@ export default function AdminScreen() {
                 <Card key={p.id} style={styles.rowCard}>
                   <View style={styles.rowTop}>
                     <Text style={styles.amount}>{formatMoney(p.amount)}</Text>
-                    <Text style={styles.meta}>{p.user_email ?? p.user_id}</Text>
+                    <Text style={styles.date}>{formatDate(p.created_at)}</Text>
                   </View>
-                  <Text style={styles.date}>{formatDate(p.created_at)}</Text>
+                  <UserInfo user={p.user} />
                   <Button
                     label="סמן כשולם"
                     onPress={() => markPaid(p.id)}
@@ -145,6 +145,7 @@ export default function AdminScreen() {
               {item.order_amount != null ? formatMoney(item.order_amount) : "—"}{" "}
               · {formatDate(item.created_at)}
             </Text>
+            <UserInfo user={item.user} />
             <View style={styles.actions}>
               <View style={{ flex: 1 }}>
                 <Button
@@ -166,6 +167,30 @@ export default function AdminScreen() {
         )}
       />
     </SafeAreaView>
+  );
+}
+
+// פרטי המשתמש שמקבל את הקאשבק — כדי שהמנהל יידע למי להעביר בביט.
+function UserInfo({ user }: { user?: UserBrief }) {
+  if (!user) return null;
+  return (
+    <View style={styles.userBox}>
+      {user.full_name ? (
+        <Text style={styles.userName}>{user.full_name}</Text>
+      ) : null}
+      {user.phone ? (
+        <View style={styles.userLine}>
+          <Ionicons name="call-outline" size={14} color={colors.primary} />
+          <Text style={styles.userText}>{user.phone}</Text>
+        </View>
+      ) : null}
+      {user.email ? (
+        <View style={styles.userLine}>
+          <Ionicons name="mail-outline" size={14} color={colors.textMuted} />
+          <Text style={styles.userText}>{user.email}</Text>
+        </View>
+      ) : null}
+    </View>
   );
 }
 
@@ -200,6 +225,25 @@ const styles = StyleSheet.create({
     marginRight: spacing.md,
   },
   date: { fontSize: font.sm, color: colors.textMuted, textAlign: "right" },
+  userBox: {
+    gap: 4,
+    backgroundColor: colors.bg,
+    borderRadius: radius.md,
+    padding: spacing.md,
+  },
+  userName: {
+    fontSize: font.md,
+    fontWeight: "800",
+    color: colors.text,
+    textAlign: "right",
+  },
+  userLine: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: spacing.xs,
+    justifyContent: "flex-end",
+  },
+  userText: { fontSize: font.sm, color: colors.text },
   actions: { flexDirection: "row", gap: spacing.md },
   empty: {
     textAlign: "center",

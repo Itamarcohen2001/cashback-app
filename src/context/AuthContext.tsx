@@ -12,7 +12,12 @@ interface AuthState {
   user: AppUser | null;
   loading: boolean;
   signIn: (email: string, password: string) => Promise<void>;
-  signUp: (email: string, password: string, fullName: string) => Promise<void>;
+  signUp: (
+    email: string,
+    password: string,
+    fullName: string,
+    phone: string,
+  ) => Promise<void>;
   signInWithGoogle: () => Promise<void>;
   signOut: () => Promise<void>;
 }
@@ -40,8 +45,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         await auth.signIn(email, password);
         setUser(await auth.getCurrentUser());
       },
-      async signUp(email, password, fullName) {
-        await auth.signUp(email, password, fullName);
+      async signUp(email, password, fullName, phone) {
+        await auth.signUp(email, password, fullName, phone);
         setUser(await auth.getCurrentUser());
       },
       async signInWithGoogle() {

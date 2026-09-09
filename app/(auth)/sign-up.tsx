@@ -18,6 +18,7 @@ export default function SignUp() {
   const { signUp, signInWithGoogle } = useAuth();
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
@@ -31,9 +32,13 @@ export default function SignUp() {
       setError("הסיסמה חייבת להכיל לפחות 6 תווים.");
       return;
     }
+    if (phone.replace(/\D/g, "").length < 9) {
+      setError("הזינו מספר טלפון חוקי (לתשלום הקאשבק בביט).");
+      return;
+    }
     setLoading(true);
     try {
-      await signUp(email.trim(), password, fullName.trim());
+      await signUp(email.trim(), password, fullName.trim(), phone.trim());
       setNotice("נשלח אימייל אימות. אשרו אותו ואז התחברו.");
     } catch (e: any) {
       setError("ההרשמה נכשלה. ייתכן שהאימייל כבר בשימוש.");
@@ -88,6 +93,13 @@ export default function SignUp() {
               autoCapitalize="none"
               keyboardType="email-address"
               placeholder="you@example.com"
+            />
+            <Input
+              label="טלפון (לתשלום בביט)"
+              value={phone}
+              onChangeText={setPhone}
+              keyboardType="phone-pad"
+              placeholder="050-0000000"
             />
             <Input
               label="סיסמה"
