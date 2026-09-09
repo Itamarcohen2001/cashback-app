@@ -31,6 +31,26 @@ from (values
   ('H&M', 'אופנה', 'https://www2.hm.com', 'percent', 5, 60, false, true),
   ('Sephora', 'בריאות וטבע', 'https://www.sephora.com', 'percent', 6, 60, false, true),
   ('Samsung', 'אלקטרוניקה', 'https://www.samsung.com', 'percent', 3, 60, false, true),
-  ('Lenovo', 'אלקטרוניקה', 'https://www.lenovo.com', 'percent', 4, 60, false, true)
+  ('Lenovo', 'אלקטרוניקה', 'https://www.lenovo.com', 'percent', 4, 60, false, true),
+  -- חנויות ישראליות פופולריות
+  ('פוקס', 'אופנה', 'https://www.fox.co.il', 'percent', 5, 60, false, true),
+  ('גולף', 'אופנה', 'https://www.golf.co.il', 'percent', 5, 60, false, true),
+  ('רנואר', 'אופנה', 'https://www.renuar.co.il', 'percent', 5, 60, false, true),
+  ('מאניה ג''ינס', 'אופנה', 'https://www.maniajeans.co.il', 'percent', 5, 60, false, true),
+  ('דלתא', 'אופנה', 'https://www.deltasport.co.il', 'percent', 5, 60, false, true),
+  ('אורבניקה', 'אופנה', 'https://www.urbanica.co.il', 'percent', 5, 60, false, true),
+  ('אלם', 'אופנה', 'https://www.elm.co.il', 'percent', 5, 60, false, true),
+  ('Shoes Online', 'אופנה', 'https://www.shoesonline.co.il', 'percent', 5, 60, false, true),
+  ('שילב', 'ילדים ותינוקות', 'https://www.shilav.co.il', 'percent', 4, 60, false, true),
+  ('נעמן', 'בית וריהוט', 'https://www.naaman.co.il', 'percent', 4, 60, false, true),
+  ('הום סנטר', 'בית וריהוט', 'https://www.homecenter.co.il', 'percent', 4, 60, false, true),
+  ('ד"ר גב', 'בית וריהוט', 'https://www.drgav.co.il', 'percent', 4, 60, false, true),
+  ('קרביץ', 'קניות כלליות', 'https://www.kravitz.co.il', 'percent', 4, 60, false, true),
+  ('פנדה', 'קניות כלליות', 'https://www.panda.co.il', 'percent', 4, 60, false, true),
+  ('לאסט פרייס', 'קניות כלליות', 'https://www.lastprice.co.il', 'percent', 4, 60, false, true),
+  ('סטימצקי', 'ספרים', 'https://www.steimatzky.co.il', 'percent', 4, 60, false, true),
+  ('אלוף הספורט', 'ספורט', 'https://www.alufsport.co.il', 'percent', 5, 60, false, true),
+  ('מגה ספורט', 'ספורט', 'https://www.megasport.co.il', 'percent', 5, 60, false, true),
+  ('ישרוטל', 'טיסות ומלונות', 'https://www.isrotel.co.il', 'percent', 5, 60, false, true)
 ) as v(name, category, base_url, cashback_type, cashback_value, user_share_percent, variable, active)
 where not exists (select 1 from public.stores s where s.name = v.name);
