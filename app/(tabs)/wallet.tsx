@@ -26,7 +26,15 @@ import {
   WalletSummary,
 } from "@/lib/types";
 import { Badge, Button, GradientCard } from "@/ui";
-import { colors, font, gradients, radius, shadow, spacing } from "@/theme";
+import {
+  colors,
+  font,
+  gradients,
+  radius,
+  rtl,
+  shadow,
+  spacing,
+} from "@/theme";
 
 const MIN_PAYOUT = 20;
 
@@ -140,8 +148,21 @@ export default function WalletScreen() {
                   <View
                     style={[
                       styles.progressFill,
-                      { width: `${Math.min(summary.available / MIN_PAYOUT, 1) * 100}%` },
+                      {
+                        flex: Math.max(
+                          0,
+                          Math.min(summary.available / MIN_PAYOUT, 1),
+                        ),
+                      },
                     ]}
+                  />
+                  <View
+                    style={{
+                      flex: Math.max(
+                        0,
+                        1 - Math.min(summary.available / MIN_PAYOUT, 1),
+                      ),
+                    }}
                   />
                 </View>
                 <Text style={styles.progressText}>
@@ -306,13 +327,13 @@ const styles = StyleSheet.create({
   },
   progressWrap: { marginTop: spacing.lg, gap: spacing.xs, width: "100%" },
   progressTrack: {
+    flexDirection: "row",
     height: 8,
     borderRadius: 4,
     backgroundColor: "rgba(255,255,255,0.25)",
     overflow: "hidden",
   },
   progressFill: {
-    height: "100%",
     borderRadius: 4,
     backgroundColor: colors.textInverse,
   },
@@ -334,6 +355,7 @@ const styles = StyleSheet.create({
     fontWeight: "800",
     color: colors.text,
     textAlign: "right",
+    marginTop: spacing.md,
   },
   error: { color: colors.danger, textAlign: "right" },
   empty: {
@@ -347,9 +369,9 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginTop: -spacing.sm,
   },
-  amountCol: { alignItems: "flex-end", gap: spacing.xs },
+  amountCol: { alignItems: rtl.end, gap: spacing.xs },
   txnRow: {
-    flexDirection: "row",
+    flexDirection: rtl.row,
     alignItems: "center",
     gap: spacing.md,
     backgroundColor: colors.card,

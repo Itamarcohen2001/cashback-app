@@ -1,4 +1,6 @@
 /** ערכת העיצוב המרכזית של CashyCash — מודרנית, נקייה ותוססת. */
+import { Platform } from "react-native";
+
 export const colors = {
   // מותג – סגול-אינדיגו תוסס
   primary: "#6C5CE7",
@@ -90,4 +92,17 @@ export const shadow = {
     shadowOffset: { width: 0, height: 10 },
     elevation: 8,
   },
+} as const;
+
+/**
+ * עוזר RTL חוצה-פלטפורמות. ב-web (react-native-web) הכיווניות RTL לא הופכת
+ * אוטומטית flexDirection, לכן משתמשים ב-row-reverse; בנייטיב forceRTL כבר הופך.
+ */
+const _web = Platform.OS === "web";
+export const rtl = {
+  row: (_web ? "row-reverse" : "row") as "row" | "row-reverse",
+  /** יישור לקצה המוביל (ימין ב-RTL). */
+  start: (_web ? "flex-end" : "flex-start") as "flex-start" | "flex-end",
+  /** יישור לקצה הנגרר (שמאל ב-RTL). */
+  end: (_web ? "flex-start" : "flex-end") as "flex-start" | "flex-end",
 } as const;

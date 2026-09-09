@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import {
   ActivityIndicator,
   Image,
@@ -12,10 +12,10 @@ import {
   ViewStyle,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
-import { brandLogoUrl } from "@/lib/format";
+import { brandLogoCandidates } from "@/lib/format";
 import { colors, font, gradients, radius, shadow, spacing } from "@/theme";
 
-/** לוגו חנות: מנסה לוגו מותג אמיתי, ונופל לאות ראשונה אם נכשל. */
+/** לוגו חנות: מנסה מספר מקורות לוגו אמיתיים, ונופל לאות ראשונה אם כולם נכשלו. */
 export function StoreLogo({
   store,
   size = 56,
@@ -29,8 +29,12 @@ export function StoreLogo({
   background?: string;
   letterColor?: string;
 }) {
-  const [failed, setFailed] = useState(false);
-  const uri = failed ? null : brandLogoUrl(store);
+  const candidates = useMemo(
+    () => brandLogoCandidates(store),
+    [store.logo_url, store.base_url],
+  );
+  const [idx, setIdx] = useState(0);
+  const uri = idx < candidates.length ? candidates[idx] : null;
   return (
     <View
       style={{
@@ -48,7 +52,7 @@ export function StoreLogo({
           source={{ uri }}
           style={{ width: "82%", height: "82%" }}
           resizeMode="contain"
-          onError={() => setFailed(true)}
+          onError={() => setIdx((i) => i + 1)}
         />
       ) : (
         <Text
@@ -265,7 +269,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.lg,
   },
   btnRow: { flexDirection: "row", alignItems: "center", gap: spacing.sm },
-  btnSecondary: { backgroundColor: colors.primaryLight },
+  btnSecondary: {
+    backgroundColor: colors.primaryLight,
+    borderWidth: 1.5,
+    borderColor: colors.primary,
+  },
   btnGhost: { backgroundColor: "transparent" },
   btnDanger: { backgroundColor: colors.danger },
   btnDisabled: { opacity: 0.45 },

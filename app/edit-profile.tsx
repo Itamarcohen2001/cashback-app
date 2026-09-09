@@ -13,7 +13,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { useAuth } from "@/context/AuthContext";
 import { Button, Card, Input } from "@/ui";
-import { colors, font, radius, shadow, spacing } from "@/theme";
+import { colors, font, radius, rtl, shadow, spacing } from "@/theme";
 
 type Msg = { text: string; ok: boolean } | null;
 
@@ -37,9 +37,9 @@ export default function EditProfileScreen() {
       setProfileMsg({ text: "הזינו שם מלא.", ok: false });
       return;
     }
-    if (phone.replace(/\D/g, "").length < 9) {
+    if (!/^05\d{8}$/.test(phone.replace(/\D/g, ""))) {
       setProfileMsg({
-        text: "הזינו מספר טלפון חוקי לתשלום בביט.",
+        text: "מספר הטלפון חייב להכיל 10 ספרות ולהתחיל ב-05 (לתשלום בביט).",
         ok: false,
       });
       return;
@@ -107,7 +107,11 @@ export default function EditProfileScreen() {
               keyboardType="phone-pad"
               placeholder="050-0000000"
             />
-            <Text style={styles.readonly}>אימייל: {user?.email}</Text>
+            <Input
+              label="אימייל (לא ניתן לעריכה)"
+              value={user?.email ?? ""}
+              editable={false}
+            />
             {profileMsg ? (
               <Text style={profileMsg.ok ? styles.ok : styles.err}>
                 {profileMsg.text}
@@ -161,7 +165,7 @@ const styles = StyleSheet.create({
     gap: spacing.lg,
     paddingBottom: spacing.xxl,
   },
-  headerRow: { flexDirection: "row", alignItems: "center", gap: spacing.sm },
+  headerRow: { flexDirection: rtl.row, alignItems: "center", gap: spacing.sm },
   backBtn: {
     width: 42,
     height: 42,

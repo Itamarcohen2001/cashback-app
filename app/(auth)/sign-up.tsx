@@ -32,8 +32,8 @@ export default function SignUp() {
       setError("הסיסמה חייבת להכיל לפחות 6 תווים.");
       return;
     }
-    if (phone.replace(/\D/g, "").length < 9) {
-      setError("הזינו מספר טלפון חוקי (לתשלום הקאשבק בביט).");
+    if (!/^05\d{8}$/.test(phone.replace(/\D/g, ""))) {
+      setError("מספר הטלפון חייב להכיל 10 ספרות ולהתחיל ב-05 (לתשלום בביט).");
       return;
     }
     setLoading(true);

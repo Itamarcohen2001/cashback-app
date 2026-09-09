@@ -21,7 +21,15 @@ import {
 import { formatCashbackLabel, formatMoney } from "@/lib/format";
 import { Store } from "@/lib/types";
 import { Button, Card, GradientCard, Input, StoreLogo } from "@/ui";
-import { colors, font, gradients, radius, shadow, spacing } from "@/theme";
+import {
+  colors,
+  font,
+  gradients,
+  radius,
+  rtl,
+  shadow,
+  spacing,
+} from "@/theme";
 
 export default function StoreScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -202,7 +210,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.card,
     alignItems: "center",
     justifyContent: "center",
-    alignSelf: "flex-start",
+    alignSelf: rtl.start,
     ...shadow.sm,
   },
   hero: { alignItems: "center", gap: spacing.sm },

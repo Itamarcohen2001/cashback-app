@@ -4,7 +4,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { useAuth } from "@/context/AuthContext";
 import { Button, Card, GradientCard } from "@/ui";
-import { colors, font, gradients, radius, spacing } from "@/theme";
+import { colors, font, gradients, radius, rtl, spacing } from "@/theme";
 
 export default function ProfileScreen() {
   const { user, signOut } = useAuth();
@@ -16,7 +16,7 @@ export default function ProfileScreen() {
     { icon: "cart-outline", text: "קונים כרגיל דרך הקישור." },
     {
       icon: "hourglass-outline",
-      text: 'הקאשבק נכנס כ"ממתין" ומאושר לאחר החנות.',
+      text: 'הקאשבק נכנס כ"ממתין" ומאושר לאחר אישור החנות.',
     },
     { icon: "cash-outline", text: "מגיעים לסכום המינימלי ומושכים לחשבון." },
   ] as const;
@@ -34,7 +34,7 @@ export default function ProfileScreen() {
             <View style={styles.avatar}>
               <Text style={styles.avatarText}>{fullName.charAt(0)}</Text>
             </View>
-            <View style={{ flex: 1, alignItems: "flex-start" }}>
+            <View style={{ flex: 1, alignItems: rtl.start }}>
               <Text style={styles.name}>{fullName}</Text>
               <Text style={styles.email}>{user?.email}</Text>
               {user?.phone ? (
@@ -104,7 +104,7 @@ const styles = StyleSheet.create({
     color: colors.text,
     textAlign: "right",
   },
-  userRow: { flexDirection: "row", alignItems: "center", gap: spacing.md },
+  userRow: { flexDirection: rtl.row, alignItems: "center", gap: spacing.md },
   avatar: {
     width: 64,
     height: 64,
@@ -118,10 +118,20 @@ const styles = StyleSheet.create({
     fontWeight: "900",
     color: colors.textInverse,
   },
-  name: { fontSize: font.xl, fontWeight: "900", color: colors.textInverse },
-  email: { fontSize: font.md, color: "#EDEBFF", marginTop: 2 },
+  name: {
+    fontSize: font.xxl,
+    fontWeight: "900",
+    color: colors.textInverse,
+    textAlign: "right",
+  },
+  email: {
+    fontSize: font.md,
+    color: "#EDEBFF",
+    marginTop: 2,
+    textAlign: "right",
+  },
   adminTag: {
-    flexDirection: "row",
+    flexDirection: rtl.row,
     alignItems: "center",
     gap: 4,
     marginTop: spacing.sm,
@@ -141,7 +151,7 @@ const styles = StyleSheet.create({
     color: colors.text,
     textAlign: "right",
   },
-  stepRow: { flexDirection: "row", alignItems: "center", gap: spacing.md },
+  stepRow: { flexDirection: rtl.row, alignItems: "center", gap: spacing.md },
   stepIcon: {
     width: 38,
     height: 38,

@@ -18,7 +18,15 @@ import { fetchStores } from "@/lib/cashback";
 import { formatCashbackLabel } from "@/lib/format";
 import { Store } from "@/lib/types";
 import { GradientCard, StoreLogo } from "@/ui";
-import { colors, font, gradients, radius, shadow, spacing } from "@/theme";
+import {
+  colors,
+  font,
+  gradients,
+  radius,
+  rtl,
+  shadow,
+  spacing,
+} from "@/theme";
 
 export default function StoresScreen() {
   const router = useRouter();
@@ -198,11 +206,7 @@ export default function StoresScreen() {
               </Text>
             </View>
             <View style={styles.chevWrap}>
-              <Ionicons
-                name="chevron-back"
-                size={22}
-                color={colors.primary}
-              />
+              <Ionicons name="chevron-back" size={22} color={colors.primary} />
             </View>
           </Pressable>
         )}
@@ -240,7 +244,7 @@ const styles = StyleSheet.create({
     paddingBottom: 130,
     gap: spacing.md,
   },
-  greetRow: { flexDirection: "row", alignItems: "center", gap: spacing.md },
+  greetRow: { flexDirection: rtl.row, alignItems: "center", gap: spacing.md },
   greetAvatar: {
     width: 48,
     height: 48,
@@ -249,7 +253,11 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  greetAvatarText: { fontSize: font.xl, fontWeight: "900", color: colors.primary },
+  greetAvatarText: {
+    fontSize: font.xl,
+    fontWeight: "900",
+    color: colors.primary,
+  },
   hello: {
     fontSize: font.lg,
     color: colors.textMuted,
@@ -262,7 +270,7 @@ const styles = StyleSheet.create({
     color: colors.text,
     textAlign: "right",
   },
-  heroRow: { flexDirection: "row", alignItems: "center", gap: spacing.md },
+  heroRow: { flexDirection: rtl.row, alignItems: "center", gap: spacing.md },
   heroTitle: {
     fontSize: font.xl,
     fontWeight: "900",
@@ -291,7 +299,7 @@ const styles = StyleSheet.create({
     textAlign: "right",
   },
   searchBar: {
-    flexDirection: "row",
+    flexDirection: rtl.row,
     alignItems: "center",
     gap: spacing.sm,
     backgroundColor: colors.card,
@@ -320,7 +328,7 @@ const styles = StyleSheet.create({
   chipText: { fontSize: font.sm, fontWeight: "700", color: colors.textMuted },
   chipTextActive: { color: colors.textInverse },
   row: {
-    flexDirection: "row",
+    flexDirection: rtl.row,
     alignItems: "center",
     gap: spacing.md,
     backgroundColor: colors.card,
