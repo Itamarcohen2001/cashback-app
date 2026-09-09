@@ -23,3 +23,6 @@ expo-env.d.ts
 npm-debug.*
 yarn-error.*
 .DS_Store
+
+# Supabase CLI temp
+supabase/.temp/
