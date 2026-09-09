@@ -20,7 +20,7 @@ export function StoreLogo({
   store,
   size = 56,
   cornerRadius = radius.md,
-  background = colors.bg,
+  background = colors.card,
   letterColor = colors.primary,
 }: {
   store: { name: string; logo_url: string | null; base_url: string };
@@ -45,12 +45,15 @@ export function StoreLogo({
         alignItems: "center",
         justifyContent: "center",
         overflow: "hidden",
+        borderWidth: 1,
+        borderColor: colors.border,
+        padding: size * 0.14,
       }}
     >
       {uri ? (
         <Image
           source={{ uri }}
-          style={{ width: "82%", height: "82%" }}
+          style={{ width: "100%", height: "100%" }}
           resizeMode="contain"
           onError={() => setIdx((i) => i + 1)}
         />

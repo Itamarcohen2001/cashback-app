@@ -62,8 +62,22 @@ function domainFromUrl(url: string): string {
 }
 
 /**
+ * override ידני ללוגואים איכותיים (לפי דומיין ללא www).
+ * משתמשים בזה כשה-favicon מטושטש/שגוי. עדיף PNG/JPG שקוף וברזולוציה גבוהה.
+ */
+const LOGO_OVERRIDES: Record<string, string> = {
+  "fox.co.il":
+    "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9a/FOX_Israel_logo.svg/512px-FOX_Israel_logo.svg.png",
+  "shilav.co.il":
+    "https://www.shilav.co.il/cdn/shop/files/shilav-logo.png",
+  "alm.co.il":
+    "https://www.alm.co.il/media/logo/stores/1/alm-logo.png",
+};
+
+/**
  * מחזיר רשימת מקורות ללוגו המותג, לניסיון לפי סדר.
- * (Clearbit נסגר ב-2023, לכן משתמשים ב-favicon של Google/DuckDuckGo.)
+ * סדר: override ידני -> logo_url מה-DB -> icon.horse (רזולוציה גבוהה) -> Google -> DuckDuckGo.
+ * (Clearbit נסגר ב-2023.)
  */
 export function brandLogoCandidates(store: {
   logo_url: string | null;
@@ -71,11 +85,15 @@ export function brandLogoCandidates(store: {
 }): string[] {
   const out: string[] = [];
   const domain = domainFromUrl(store.base_url);
-  // לוגו אמיתי מהרשת — אבל לא SVG (React Native לא מרנדר SVG).
+  const override = LOGO_OVERRIDES[domain];
+  if (override) out.push(override);
+  // לוגו אמיתי מה-DB — אבל לא SVG (React Native לא מרנדר SVG).
   if (store.logo_url && !store.logo_url.toLowerCase().endsWith(".svg")) {
     out.push(store.logo_url);
   }
   if (domain) {
+    // icon.horse מחזיר את האייקון הגדול/איכותי ביותר שקיים לאתר.
+    out.push(`https://icon.horse/icon/${domain}`);
     out.push(`https://www.google.com/s2/favicons?sz=128&domain=${domain}`);
     out.push(`https://icons.duckduckgo.com/ip3/${domain}.ico`);
   }
