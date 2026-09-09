@@ -54,6 +54,7 @@ export interface AffiliateNetwork {
   readonly name: string;
   fetchOffers(): Promise<NetworkOffer[]>;
   fetchCoupons(): Promise<NetworkCoupon[]>;
+  fetchCouponsRaw?(): Promise<unknown[]>;
   parsePostback(url: URL, body: Record<string, unknown> | null): PostbackEvent;
 }
 
@@ -207,6 +208,19 @@ class AdmitadNetwork implements AffiliateNetwork {
     return coupons;
   }
 
+  async fetchCouponsRaw(): Promise<unknown[]> {
+    if (!this.websiteId) throw new Error("חסר ADMITAD_WEBSITE_ID");
+    const scope =
+      Deno.env.get("ADMITAD_COUPONS_SCOPE") ?? "coupons_for_website";
+    const token = await this.token(scope);
+    const res = await fetch(
+      `${ADMITAD_API}/coupons/website/${this.websiteId}/?limit=20&offset=0`,
+      { headers: { Authorization: `Bearer ${token}` } },
+    );
+    const data = await res.json();
+    return (data.results ?? []) as unknown[];
+  }
+
   parsePostback(url: URL, body: Record<string, unknown> | null): PostbackEvent {
     const q = (k: string): string | null =>
       url.searchParams.get(k) ?? (body?.[k] != null ? String(body[k]) : null);
@@ -292,7 +306,8 @@ function parseAdmitadRate(c: AdmitadCampaign): {
 function normalizePromocode(raw?: string | null): string | null {
   const code = (raw ?? "").trim();
   if (!code) return null;
-  if (/^(not required|no code|none|n\/?a|не требуется)$/i.test(code)) return null;
+  if (/^(not required|no code|none|n\/?a|не требуется)$/i.test(code))
+    return null;
   return code;
 }
 
@@ -328,36 +343,51 @@ function summarizeCouponHe(c: AdmitadCoupon): {
   title: string;
   description: string | null;
 } {
-  const blob = `${c.name ?? ""} ${c.discount ?? ""}`.trim();
-  const upTo = /up to|up-to|до\b|from\b|מעל|עד\b/i.test(blob);
-  const freeShip = /free ship|free deliver|бесплатн\w* доставк|משלוח חינם/i.test(
-    blob,
-  );
+  // ה-name הוא מקור האמת (discount לרוב שדה דירוג פנימי ולא ההנחה בפועל).
+  const name = (c.name ?? "").trim();
   const code = normalizePromocode(c.promocode);
-
-  // אחוז הנחה (למשל 70%)
-  const pct = blob.match(/(\d{1,3})\s*%/);
-  // סכום קבוע עם מטבע (למשל $10 / 50₪)
-  const amount = blob.match(/([$€₪£])\s*(\d+[\d.,]*)|(\d+[\d.,]*)\s*([$€₪£])/);
+  // מטבע: אותיות מדינה אופציונליות + רווח, ואז סמל ומספר. תופס "US $39", "CA$50", "€39".
+  const CUR = "(?:[A-Z]{0,3}\\s?)?([$€£₪])\\s?(\\d[\\d.,]*)";
+  const upTo = /up to|up-to|до\b|from\b|מעל|עד\b/i.test(name);
+  const freeShip =
+    /free ship|free deliver|бесплатн\w* доставк|משלוח חינם/i.test(name);
 
   let title: string;
-  if (pct) {
+  let minPurchase: string | null = null;
+
+  // תבנית "X off orders over Y" — סכום הנחה קבוע + מינימום קנייה (ההגבלה האמיתית)
+  const offOver = name.match(
+    new RegExp(`${CUR}\\s*off\\s*orders?\\s*over\\s*${CUR}`, "i"),
+  );
+  const pct = name.match(/(\d{1,3})\s*%/);
+  const amount = name.match(new RegExp(CUR, "i"));
+
+  if (offOver) {
+    title = `${offOver[1]}${offOver[2]} הנחה`;
+    minPurchase = `${offOver[3]}${offOver[4]}`;
+  } else if (pct) {
     title = `${upTo ? "עד " : ""}${pct[1]}% הנחה`;
-  } else if (amount) {
-    const sym = amount[1] ?? amount[4] ?? "";
-    const num = amount[2] ?? amount[3] ?? "";
-    title = `${sym}${num} הנחה`;
   } else if (freeShip) {
     title = "משלוח חינם";
+  } else if (amount) {
+    title = `${amount[1]}${amount[2]} הנחה`;
   } else if (code) {
     title = "קופון הנחה";
   } else {
     title = "מבצע";
   }
 
+  // הגבלת מינימום קנייה כללית (אם לא נתפסה למעלה)
+  if (!minPurchase) {
+    const over = name.match(
+      new RegExp(`(?:over|above|от|מעל)\\s*${CUR}`, "i"),
+    );
+    if (over) minPurchase = `${over[1]}${over[2]}`;
+  }
+
   const parts: string[] = [];
-  if (code) parts.push("בקוד קופון");
-  else parts.push("מוחל אוטומטית");
+  if (minPurchase) parts.push(`בקנייה מעל ${minPurchase}`);
+  parts.push(code ? "בקוד קופון" : "מוחל אוטומטית");
   if (c.date_end) {
     const d = new Date(c.date_end);
     if (!Number.isNaN(d.getTime())) {

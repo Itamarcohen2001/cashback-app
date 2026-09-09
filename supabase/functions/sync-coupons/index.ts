@@ -20,6 +20,18 @@ Deno.serve(async (req) => {
   }
 
   const network = getNetwork();
+
+  // מצב דיבאג: מחזיר דגימת קופונים גולמית (לבדיקת השדות שמגיעים מהרשת)
+  const url = new URL(req.url);
+  if (url.searchParams.get("sample") === "1" && network.fetchCouponsRaw) {
+    try {
+      const raw = await network.fetchCouponsRaw();
+      return json({ ok: true, sample: raw.slice(0, 20) });
+    } catch (e) {
+      return json({ error: String(e instanceof Error ? e.message : e) }, 502);
+    }
+  }
+
   let coupons;
   try {
     coupons = await network.fetchCoupons();
