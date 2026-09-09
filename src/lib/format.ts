@@ -71,6 +71,8 @@ const LOGO_OVERRIDES: Record<string, string> = {
   "shilav.co.il": "https://www.shilav.co.il/cdn/shop/files/shilav-logo.png",
   "alm.co.il": "https://www.alm.co.il/media/logo/stores/1/alm-logo.png",
   "ksp.co.il": "https://ksp.co.il/handle_cookies/assets/ksp_logo.webp",
+  // icon.horse מחזיר צילום מסך של הלוגו עם תג האזור "WW" - עוקפים אותו עם פאביקון נקי.
+  "aliexpress.com": "https://www.google.com/s2/favicons?sz=128&domain=aliexpress.com",
 };
 
 /**
@@ -91,9 +93,9 @@ export function brandLogoCandidates(store: {
     out.push(store.logo_url);
   }
   if (domain) {
-    // icon.horse מחזיר את האייקון הגדול/איכותי ביותר שקיים לאתר.
-    out.push(`https://icon.horse/icon/${domain}`);
+    // Google favicons מחזיר אייקון קטן ונקי (בלי תגי אזור/טקסט שיכולים להופיע ב-icon.horse).
     out.push(`https://www.google.com/s2/favicons?sz=128&domain=${domain}`);
+    out.push(`https://icon.horse/icon/${domain}`);
     out.push(`https://icons.duckduckgo.com/ip3/${domain}.ico`);
   }
   return out;
