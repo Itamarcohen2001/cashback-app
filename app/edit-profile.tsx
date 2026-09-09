@@ -184,6 +184,16 @@ const styles = StyleSheet.create({
     textAlign: "right",
   },
   readonly: { fontSize: font.sm, color: colors.textMuted, textAlign: "right" },
-  ok: { fontSize: font.sm, color: colors.success, textAlign: "right", fontWeight: "700" },
-  err: { fontSize: font.sm, color: colors.danger, textAlign: "right", fontWeight: "700" },
+  ok: {
+    fontSize: font.sm,
+    color: colors.success,
+    textAlign: "right",
+    fontWeight: "700",
+  },
+  err: {
+    fontSize: font.sm,
+    color: colors.danger,
+    textAlign: "right",
+    fontWeight: "700",
+  },
 });

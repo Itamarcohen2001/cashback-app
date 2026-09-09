@@ -29,3 +29,23 @@ export function formatDate(iso: string): string {
     return iso;
   }
 }
+
+/** מחלץ דומיין מכתובת URL (למשל https://www.booking.com/x -> booking.com). */
+function domainFromUrl(url: string): string {
+  const cleaned = url.replace(/^https?:\/\//, '').replace(/^www\./, '');
+  return cleaned.split('/')[0];
+}
+
+/**
+ * מחזיר לוגו למותג: משתמש ב-logo_url אם קיים, אחרת נגזר מהדומיין דרך Clearbit.
+ * למשל booking.com -> https://logo.clearbit.com/booking.com
+ */
+export function brandLogoUrl(store: {
+  logo_url: string | null;
+  base_url: string;
+}): string | null {
+  if (store.logo_url) return store.logo_url;
+  const domain = domainFromUrl(store.base_url);
+  return domain ? `https://logo.clearbit.com/${domain}` : null;
+}
+

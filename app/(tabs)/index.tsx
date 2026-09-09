@@ -2,7 +2,6 @@ import { useCallback, useMemo, useState } from "react";
 import {
   ActivityIndicator,
   FlatList,
-  Image,
   Pressable,
   RefreshControl,
   ScrollView,
@@ -14,14 +13,17 @@ import {
 import { useFocusEffect, useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
+import { useAuth } from "@/context/AuthContext";
 import { fetchStores } from "@/lib/cashback";
 import { formatCashbackLabel } from "@/lib/format";
 import { Store } from "@/lib/types";
-import { GradientCard } from "@/ui";
+import { GradientCard, StoreLogo } from "@/ui";
 import { colors, font, gradients, radius, shadow, spacing } from "@/theme";
 
 export default function StoresScreen() {
   const router = useRouter();
+  const { user } = useAuth();
+  const firstName = user?.full_name?.trim().split(/\s+/)[0] ?? "";
   const [stores, setStores] = useState<Store[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -79,9 +81,18 @@ export default function StoresScreen() {
         }
         ListHeaderComponent={
           <View style={{ gap: spacing.lg, marginBottom: spacing.lg }}>
-            <View>
-              <Text style={styles.hello}>שלום 👋</Text>
-              <Text style={styles.title}>חנויות עם קאשבק</Text>
+            <View style={styles.greetRow}>
+              <View style={styles.greetAvatar}>
+                <Text style={styles.greetAvatarText}>
+                  {(firstName || "👋").charAt(0)}
+                </Text>
+              </View>
+              <View style={{ flex: 1 }}>
+                <Text style={styles.hello}>
+                  {`שלום${firstName ? ` ${firstName}` : ""}`} 👋
+                </Text>
+                <Text style={styles.title}>חנויות עם קאשבק</Text>
+              </View>
             </View>
             <GradientCard
               colors={gradients.primary as unknown as string[]}
@@ -109,7 +120,7 @@ export default function StoresScreen() {
               <TextInput
                 value={query}
                 onChangeText={setQuery}
-                placeholder="חיפוש חנות…"
+                placeholder="חיפוש חנות"
                 placeholderTextColor={colors.textMuted}
                 style={styles.searchInput}
               />
@@ -174,13 +185,7 @@ export default function StoresScreen() {
             ]}
             onPress={() => router.push(`/store/${item.id}`)}
           >
-            <View style={styles.logo}>
-              {item.logo_url ? (
-                <Image source={{ uri: item.logo_url }} style={styles.logoImg} />
-              ) : (
-                <Text style={styles.logoText}>{item.name.charAt(0)}</Text>
-              )}
-            </View>
+            <StoreLogo store={item} size={56} />
             <View style={{ flex: 1, gap: 2 }}>
               <Text style={styles.storeName}>{item.name}</Text>
               {item.category ? (
@@ -195,8 +200,8 @@ export default function StoresScreen() {
             <View style={styles.chevWrap}>
               <Ionicons
                 name="chevron-back"
-                size={18}
-                color={colors.textMuted}
+                size={22}
+                color={colors.primary}
               />
             </View>
           </Pressable>
@@ -232,14 +237,24 @@ const styles = StyleSheet.create({
   list: {
     paddingHorizontal: spacing.lg,
     paddingTop: spacing.lg,
-    paddingBottom: 110,
+    paddingBottom: 130,
     gap: spacing.md,
   },
+  greetRow: { flexDirection: "row", alignItems: "center", gap: spacing.md },
+  greetAvatar: {
+    width: 48,
+    height: 48,
+    borderRadius: radius.pill,
+    backgroundColor: colors.primaryLight,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  greetAvatarText: { fontSize: font.xl, fontWeight: "900", color: colors.primary },
   hello: {
-    fontSize: font.md,
+    fontSize: font.lg,
     color: colors.textMuted,
     textAlign: "right",
-    fontWeight: "600",
+    fontWeight: "700",
   },
   title: {
     fontSize: font.xxxl,
@@ -292,7 +307,7 @@ const styles = StyleSheet.create({
     color: colors.text,
     textAlign: "right",
   },
-  chipsRow: { gap: spacing.sm, paddingVertical: 2 },
+  chipsRow: { gap: spacing.md, paddingVertical: 2, paddingHorizontal: 2 },
   chip: {
     backgroundColor: colors.card,
     borderRadius: radius.pill,
@@ -313,7 +328,14 @@ const styles = StyleSheet.create({
     padding: spacing.md,
   },
   pressed: { opacity: 0.9, transform: [{ scale: 0.985 }] },
-  chevWrap: { paddingHorizontal: spacing.xs },
+  chevWrap: {
+    width: 32,
+    height: 32,
+    borderRadius: radius.pill,
+    backgroundColor: colors.primaryLight,
+    alignItems: "center",
+    justifyContent: "center",
+  },
   cashPill: {
     backgroundColor: colors.accentLight,
     borderRadius: radius.pill,

@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import {
   Alert,
-  Image,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -21,7 +20,7 @@ import {
 } from "@/lib/cashback";
 import { formatCashbackLabel, formatMoney } from "@/lib/format";
 import { Store } from "@/lib/types";
-import { Button, Card, GradientCard, Input } from "@/ui";
+import { Button, Card, GradientCard, Input, StoreLogo } from "@/ui";
 import { colors, font, gradients, radius, shadow, spacing } from "@/theme";
 
 export default function StoreScreen() {
@@ -106,13 +105,13 @@ export default function StoreScreen() {
           glow
           style={styles.hero}
         >
-          <View style={styles.logo}>
-            {store.logo_url ? (
-              <Image source={{ uri: store.logo_url }} style={styles.logoImg} />
-            ) : (
-              <Text style={styles.logoText}>{store.name.charAt(0)}</Text>
-            )}
-          </View>
+          <StoreLogo
+            store={store}
+            size={88}
+            cornerRadius={radius.lg}
+            background="rgba(255,255,255,0.95)"
+            letterColor={colors.primary}
+          />
           <Text style={styles.name}>{store.name}</Text>
           {store.category ? (
             <Text style={styles.category}>{store.category}</Text>

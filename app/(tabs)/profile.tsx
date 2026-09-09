@@ -97,7 +97,7 @@ export default function ProfileScreen() {
 
 const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: colors.bg },
-  container: { padding: spacing.lg, gap: spacing.lg, paddingBottom: 110 },
+  container: { padding: spacing.lg, gap: spacing.lg, paddingBottom: 130 },
   title: {
     fontSize: font.xxxl,
     fontWeight: "900",

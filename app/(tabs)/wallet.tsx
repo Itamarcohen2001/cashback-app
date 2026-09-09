@@ -135,6 +135,21 @@ export default function WalletScreen() {
                   icon="checkmark-done-outline"
                 />
               </View>
+              <View style={styles.progressWrap}>
+                <View style={styles.progressTrack}>
+                  <View
+                    style={[
+                      styles.progressFill,
+                      { width: `${Math.min(summary.available / MIN_PAYOUT, 1) * 100}%` },
+                    ]}
+                  />
+                </View>
+                <Text style={styles.progressText}>
+                  {summary.available >= MIN_PAYOUT
+                    ? "הגעת לסכום המינימלי — אפשר למשוך! 🎉"
+                    : `עוד ${formatMoney(MIN_PAYOUT - summary.available)} עד למשיכה`}
+                </Text>
+              </View>
             </GradientCard>
             <Button
               label="בקשת משיכה"
@@ -257,7 +272,7 @@ function Stat({
 
 const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: colors.bg },
-  list: { padding: spacing.lg, paddingBottom: 110, gap: spacing.md },
+  list: { padding: spacing.lg, paddingBottom: 130, gap: spacing.md },
   title: {
     fontSize: font.xxxl,
     fontWeight: "900",
@@ -288,6 +303,24 @@ const styles = StyleSheet.create({
     width: 1,
     height: 34,
     backgroundColor: "rgba(255,255,255,0.25)",
+  },
+  progressWrap: { marginTop: spacing.lg, gap: spacing.xs, width: "100%" },
+  progressTrack: {
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: "rgba(255,255,255,0.25)",
+    overflow: "hidden",
+  },
+  progressFill: {
+    height: "100%",
+    borderRadius: 4,
+    backgroundColor: colors.textInverse,
+  },
+  progressText: {
+    color: "#EDEBFF",
+    fontSize: font.sm,
+    textAlign: "center",
+    fontWeight: "600",
   },
   stat: { alignItems: "center", gap: 2 },
   statValue: {

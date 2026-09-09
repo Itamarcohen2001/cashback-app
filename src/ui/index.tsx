@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import {
   ActivityIndicator,
+  Image,
   Pressable,
   StyleProp,
   StyleSheet,
@@ -11,7 +12,58 @@ import {
   ViewStyle,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
+import { brandLogoUrl } from "@/lib/format";
 import { colors, font, gradients, radius, shadow, spacing } from "@/theme";
+
+/** לוגו חנות: מנסה לוגו מותג אמיתי, ונופל לאות ראשונה אם נכשל. */
+export function StoreLogo({
+  store,
+  size = 56,
+  cornerRadius = radius.md,
+  background = colors.primaryLight,
+  letterColor = colors.primary,
+}: {
+  store: { name: string; logo_url: string | null; base_url: string };
+  size?: number;
+  cornerRadius?: number;
+  background?: string;
+  letterColor?: string;
+}) {
+  const [failed, setFailed] = useState(false);
+  const uri = failed ? null : brandLogoUrl(store);
+  return (
+    <View
+      style={{
+        width: size,
+        height: size,
+        borderRadius: cornerRadius,
+        backgroundColor: background,
+        alignItems: "center",
+        justifyContent: "center",
+        overflow: "hidden",
+      }}
+    >
+      {uri ? (
+        <Image
+          source={{ uri }}
+          style={{ width: "82%", height: "82%" }}
+          resizeMode="contain"
+          onError={() => setFailed(true)}
+        />
+      ) : (
+        <Text
+          style={{
+            fontSize: size * 0.4,
+            fontWeight: "900",
+            color: letterColor,
+          }}
+        >
+          {store.name.charAt(0)}
+        </Text>
+      )}
+    </View>
+  );
+}
 
 export function Card({
   children,
