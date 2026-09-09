@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   ActivityIndicator,
   FlatList,
@@ -14,12 +14,25 @@ import { useFocusEffect, useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { useAuth } from "@/context/AuthContext";
-import { fetchStores } from "@/lib/cashback";
+import { fetchFeaturedCoupons, fetchStores } from "@/lib/cashback";
+import { categoryMeta } from "@/lib/categories";
+import {
+  getFavoriteIds,
+  subscribeFavorites,
+  toggleFavorite,
+} from "@/lib/favorites";
 import { formatUserCashback } from "@/lib/format";
 import { getRecentStoreIds } from "@/lib/recent";
-import { Store } from "@/lib/types";
-import { GradientCard, StoreLogo } from "@/ui";
+import { Coupon, Store } from "@/lib/types";
+import { CouponCard, GradientCard, HeartButton, StoreLogo } from "@/ui";
 import { colors, font, gradients, radius, rtl, shadow, spacing } from "@/theme";
+
+type SortMode = "popular" | "cashback" | "name";
+
+/** קאשבק אפקטיבי (לצורך מיון): שיעור/סכום × חלק המשתמש. */
+function effectiveCashback(s: Store): number {
+  return (s.cashback_value * s.user_share_percent) / 100;
+}
 
 export default function StoresScreen() {
   const router = useRouter();
@@ -31,11 +44,20 @@ export default function StoresScreen() {
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState<string | null>(null);
   const [recentIds, setRecentIds] = useState<string[]>([]);
+  const [favoriteIds, setFavoriteIds] = useState<string[]>([]);
+  const [onlyFavorites, setOnlyFavorites] = useState(false);
+  const [sort, setSort] = useState<SortMode>("popular");
+  const [hotDeals, setHotDeals] = useState<Coupon[]>([]);
 
   const load = useCallback(async () => {
     setError(null);
     try {
-      setStores(await fetchStores());
+      const [s, deals] = await Promise.all([
+        fetchStores(),
+        fetchFeaturedCoupons().catch(() => [] as Coupon[]),
+      ]);
+      setStores(s);
+      setHotDeals(deals);
     } catch (e) {
       setError("לא הצלחנו לטעון חנויות. בדקו חיבור ו-Supabase.");
     } finally {
@@ -47,8 +69,15 @@ export default function StoresScreen() {
     useCallback(() => {
       load();
       getRecentStoreIds().then(setRecentIds);
+      getFavoriteIds().then(setFavoriteIds);
     }, [load]),
   );
+
+  useEffect(() => subscribeFavorites(setFavoriteIds), []);
+
+  const onToggleFavorite = useCallback((id: string) => {
+    toggleFavorite(id);
+  }, []);
 
   const categories = useMemo(() => {
     const set = new Set<string>();
@@ -58,15 +87,30 @@ export default function StoresScreen() {
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
-    return stores.filter((s) => {
+    const favSet = new Set(favoriteIds);
+    const list = stores.filter((s) => {
       const matchesCat = !category || s.category === category;
+      const matchesFav = !onlyFavorites || favSet.has(s.id);
       const matchesQuery =
         !q ||
         s.name.toLowerCase().includes(q) ||
         (s.category?.toLowerCase().includes(q) ?? false);
-      return matchesCat && matchesQuery;
+      return matchesCat && matchesFav && matchesQuery;
     });
-  }, [stores, query, category]);
+    const sorted = [...list];
+    if (sort === "name") {
+      sorted.sort((a, b) => a.name.localeCompare(b.name, "he"));
+    } else if (sort === "cashback") {
+      sorted.sort((a, b) => effectiveCashback(b) - effectiveCashback(a));
+    } else {
+      sorted.sort(
+        (a, b) =>
+          Number(Boolean(b.popular)) - Number(Boolean(a.popular)) ||
+          effectiveCashback(b) - effectiveCashback(a),
+      );
+    }
+    return sorted;
+  }, [stores, query, category, onlyFavorites, favoriteIds, sort]);
 
   // המומלצות שלך: חנויות שנצפו/נעשה בהן שימוש לאחרונה.
   const featured = useMemo(() => {
@@ -75,6 +119,8 @@ export default function StoresScreen() {
       .map((id) => byId.get(id))
       .filter((s): s is Store => Boolean(s));
   }, [stores, recentIds]);
+
+  const noFilter = !query && !category && !onlyFavorites;
 
   return (
     <SafeAreaView style={styles.safe} edges={["top"]}>
@@ -126,7 +172,61 @@ export default function StoresScreen() {
               </View>
             </GradientCard>
 
-            {featured.length > 0 && !query && !category ? (
+            {categories.length > 0 ? (
+              <View style={{ gap: spacing.sm }}>
+                <Text style={styles.sectionTitle}>קטגוריות</Text>
+                <ScrollView
+                  horizontal
+                  showsHorizontalScrollIndicator={false}
+                  contentContainerStyle={styles.catRow}
+                >
+                  <CategoryTile
+                    label="הכול"
+                    icon="grid"
+                    color={colors.primary}
+                    active={!category}
+                    onPress={() => setCategory(null)}
+                  />
+                  {categories.map((c) => {
+                    const meta = categoryMeta(c);
+                    return (
+                      <CategoryTile
+                        key={c}
+                        label={c}
+                        icon={meta.icon}
+                        color={meta.color}
+                        active={category === c}
+                        onPress={() =>
+                          setCategory((prev) => (prev === c ? null : c))
+                        }
+                      />
+                    );
+                  })}
+                </ScrollView>
+              </View>
+            ) : null}
+
+            {hotDeals.length > 0 && noFilter ? (
+              <View style={{ gap: spacing.sm }}>
+                <Text style={styles.sectionTitle}>דילים חמים 🔥</Text>
+                <ScrollView
+                  horizontal
+                  showsHorizontalScrollIndicator={false}
+                  contentContainerStyle={styles.dealsRow}
+                >
+                  {hotDeals.map((c) => (
+                    <View key={c.id} style={styles.dealCardWrap}>
+                      <CouponCard
+                        coupon={c}
+                        onPress={() => router.push(`/store/${c.store_id}`)}
+                      />
+                    </View>
+                  ))}
+                </ScrollView>
+              </View>
+            ) : null}
+
+            {featured.length > 0 && noFilter ? (
               <View style={{ gap: spacing.sm }}>
                 <Text style={styles.sectionTitle}>נצפו לאחרונה 👀</Text>
                 <ScrollView
@@ -174,30 +274,36 @@ export default function StoresScreen() {
               ) : null}
             </View>
 
-            {categories.length > 0 ? (
-              <ScrollView
-                horizontal
-                showsHorizontalScrollIndicator={false}
-                contentContainerStyle={styles.chipsRow}
-              >
-                <Chip
-                  label="הכול"
-                  active={!category}
-                  onPress={() => setCategory(null)}
-                />
-                {categories.map((c) => (
-                  <Chip
-                    key={c}
-                    label={c}
-                    active={category === c}
-                    onPress={() => setCategory(c)}
-                  />
-                ))}
-              </ScrollView>
-            ) : null}
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.chipsRow}
+            >
+              <Chip
+                label="❤ מועדפים"
+                active={onlyFavorites}
+                onPress={() => setOnlyFavorites((v) => !v)}
+              />
+              <Chip
+                label="פופולריות"
+                active={sort === "popular"}
+                onPress={() => setSort("popular")}
+              />
+              <Chip
+                label="קאשבק גבוה"
+                active={sort === "cashback"}
+                onPress={() => setSort("cashback")}
+              />
+              <Chip
+                label="א-ב"
+                active={sort === "name"}
+                onPress={() => setSort("name")}
+              />
+            </ScrollView>
 
             <Text style={styles.sectionTitle}>
-              {category ?? "כל החנויות"} ({filtered.length})
+              {onlyFavorites ? "המועדפים שלי" : (category ?? "כל החנויות")} (
+              {filtered.length})
             </Text>
           </View>
         }
@@ -239,9 +345,11 @@ export default function StoresScreen() {
                 {formatUserCashback(item)}
               </Text>
             </View>
-            <View style={styles.chevWrap}>
-              <Ionicons name="chevron-back" size={22} color={colors.primary} />
-            </View>
+            <HeartButton
+              active={favoriteIds.includes(item.id)}
+              onPress={() => onToggleFavorite(item.id)}
+              size={20}
+            />
           </Pressable>
         )}
       />
@@ -264,6 +372,39 @@ function Chip({
       style={[styles.chip, active && styles.chipActive]}
     >
       <Text style={[styles.chipText, active && styles.chipTextActive]}>
+        {label}
+      </Text>
+    </Pressable>
+  );
+}
+
+function CategoryTile({
+  label,
+  icon,
+  color,
+  active,
+  onPress,
+}: {
+  label: string;
+  icon: React.ComponentProps<typeof Ionicons>["name"];
+  color: string;
+  active: boolean;
+  onPress: () => void;
+}) {
+  return (
+    <Pressable style={styles.catTile} onPress={onPress}>
+      <View
+        style={[
+          styles.catIcon,
+          { backgroundColor: active ? color : color + "1F" },
+        ]}
+      >
+        <Ionicons name={icon} size={24} color={active ? "#fff" : color} />
+      </View>
+      <Text
+        style={[styles.catLabel, active && { color: colors.text }]}
+        numberOfLines={1}
+      >
         {label}
       </Text>
     </Pressable>
@@ -333,6 +474,23 @@ const styles = StyleSheet.create({
     textAlign: "right",
   },
   featuredRow: { gap: spacing.md, paddingVertical: 2, paddingHorizontal: 2 },
+  catRow: { gap: spacing.md, paddingVertical: 2, paddingHorizontal: 2 },
+  catTile: { width: 72, alignItems: "center", gap: spacing.xs },
+  catIcon: {
+    width: 60,
+    height: 60,
+    borderRadius: radius.pill,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  catLabel: {
+    fontSize: font.sm,
+    fontWeight: "700",
+    color: colors.textMuted,
+    textAlign: "center",
+  },
+  dealsRow: { gap: spacing.md, paddingVertical: 2, paddingHorizontal: 2 },
+  dealCardWrap: { width: 300 },
   featuredCard: {
     width: 120,
     alignItems: "center",

@@ -15,13 +15,23 @@ import { USE_MOCK } from "@/lib/auth";
 import {
   activateCashback,
   computeUserCashback,
+  fetchCoupons,
   fetchStore,
   simulatePurchase,
 } from "@/lib/cashback";
 import { formatMoney, formatUserCashback } from "@/lib/format";
 import { addRecentStore } from "@/lib/recent";
-import { Store } from "@/lib/types";
-import { Button, Card, GradientCard, Input, StoreLogo } from "@/ui";
+import { isFavorite, toggleFavorite } from "@/lib/favorites";
+import { Coupon, Store } from "@/lib/types";
+import {
+  Button,
+  Card,
+  CouponCard,
+  GradientCard,
+  HeartButton,
+  Input,
+  StoreLogo,
+} from "@/ui";
 import { colors, font, gradients, radius, rtl, shadow, spacing } from "@/theme";
 
 export default function StoreScreen() {
@@ -29,6 +39,8 @@ export default function StoreScreen() {
   const { user } = useAuth();
   const router = useRouter();
   const [store, setStore] = useState<Store | null>(null);
+  const [coupons, setCoupons] = useState<Coupon[]>([]);
+  const [fav, setFav] = useState(false);
   const [loading, setLoading] = useState(true);
   const [activating, setActivating] = useState(false);
   const [orderAmount, setOrderAmount] = useState("250");
@@ -36,11 +48,22 @@ export default function StoreScreen() {
 
   useEffect(() => {
     (async () => {
-      setStore(await fetchStore(id));
+      const [s, cs, f] = await Promise.all([
+        fetchStore(id),
+        fetchCoupons(id).catch(() => [] as Coupon[]),
+        isFavorite(id),
+      ]);
+      setStore(s);
+      setCoupons(cs);
+      setFav(f);
       setLoading(false);
       addRecentStore(id); // מסמן כנצפה לקרוסלת "נצפו לאחרונה"
     })();
   }, [id]);
+
+  async function onToggleFavorite() {
+    setFav(await toggleFavorite(id));
+  }
 
   async function onActivate() {
     if (!store || !user) return;
@@ -98,14 +121,17 @@ export default function StoreScreen() {
         contentContainerStyle={styles.container}
         showsVerticalScrollIndicator={false}
       >
-        <Pressable
-          onPress={() =>
-            router.canGoBack() ? router.back() : router.replace("/(tabs)")
-          }
-          style={styles.backBtn}
-        >
-          <Ionicons name="chevron-forward" size={22} color={colors.text} />
-        </Pressable>
+        <View style={styles.topBar}>
+          <Pressable
+            onPress={() =>
+              router.canGoBack() ? router.back() : router.replace("/(tabs)")
+            }
+            style={styles.backBtn}
+          >
+            <Ionicons name="chevron-forward" size={22} color={colors.text} />
+          </Pressable>
+          <HeartButton active={fav} onPress={onToggleFavorite} />
+        </View>
 
         <GradientCard
           colors={gradients.primary as unknown as string[]}
@@ -151,6 +177,15 @@ export default function StoreScreen() {
           onPress={onActivate}
           loading={activating}
         />
+
+        {coupons.length > 0 ? (
+          <View style={{ gap: spacing.md }}>
+            <Text style={styles.sectionTitle}>קופונים ודילים</Text>
+            {coupons.map((c) => (
+              <CouponCard key={c.id} coupon={c} />
+            ))}
+          </View>
+        ) : null}
 
         {USE_MOCK ? (
           <Card style={styles.demoCard}>
@@ -209,6 +244,17 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignSelf: rtl.start,
     ...shadow.sm,
+  },
+  topBar: {
+    flexDirection: rtl.row,
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  sectionTitle: {
+    fontSize: font.lg,
+    fontWeight: "800",
+    color: colors.text,
+    textAlign: "right",
   },
   hero: { alignItems: "center", gap: spacing.sm },
   name: { fontSize: font.xxl, fontWeight: "900", color: colors.textInverse },

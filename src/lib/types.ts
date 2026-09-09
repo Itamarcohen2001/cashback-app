@@ -55,6 +55,27 @@ export interface Store {
   network_offer_id?: string | null;
   /** האם שיעור הקאשבק משתנה בין פריטים (מציגים "עד"). */
   variable?: boolean | null;
+  /** האם החנות מסומנת כפופולרית (מוצגת ראשונה במיון "פופולריות"). */
+  popular?: boolean | null;
+}
+
+/** קופון/דיל של חנות (קוד הנחה או מבצע אוטומטי). */
+export interface Coupon {
+  id: string;
+  store_id: string;
+  /** כותרת ההטבה, למשל "20% הנחה על כל האתר". */
+  title: string;
+  /** קוד קופון להעתקה. null = דיל אוטומטי ללא קוד. */
+  code: string | null;
+  description: string | null;
+  /** תאריך תפוגה (ISO) או null אם ללא הגבלה. */
+  expires_at: string | null;
+  /** האם דיל חם (מוצג בקרוסלת "דילים חמים" בעמוד הבית). */
+  featured: boolean;
+  active: boolean;
+  created_at: string;
+  /** מצורף ב-join עם טבלת stores. */
+  store?: Pick<Store, "name" | "logo_url" | "base_url" | "category">;
 }
 
 export type CashbackStatus = "pending" | "confirmed" | "paid" | "rejected";

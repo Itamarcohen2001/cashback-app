@@ -4,6 +4,7 @@ import { Platform } from "react-native";
 import { isSupabaseConfigured, supabase } from "./supabase";
 import {
   CashbackTransaction,
+  Coupon,
   PayoutRequest,
   Store,
   UserBrief,
@@ -131,6 +132,35 @@ export async function fetchStore(id: string): Promise<Store | null> {
     .eq("id", id)
     .single();
   return (data as Store) ?? null;
+}
+
+// ===================== קופונים / דילים (Coupons) =====================
+
+const COUPON_SELECT = "*, store:stores(name, logo_url, base_url, category)";
+
+/** שולף קופונים פעילים — הכול או לחנות מסוימת (דילים חמים ראשונים). */
+export async function fetchCoupons(storeId?: string): Promise<Coupon[]> {
+  if (USE_MOCK) return mock.listCoupons(storeId);
+  let q = supabase.from("coupons").select(COUPON_SELECT).eq("active", true);
+  if (storeId) q = q.eq("store_id", storeId);
+  const { data, error } = await q
+    .order("featured", { ascending: false })
+    .order("created_at", { ascending: false });
+  if (error) throw error;
+  return (data ?? []) as Coupon[];
+}
+
+/** שולף את הדילים החמים (featured) לקרוסלת עמוד הבית. */
+export async function fetchFeaturedCoupons(): Promise<Coupon[]> {
+  if (USE_MOCK) return mock.listFeaturedCoupons();
+  const { data, error } = await supabase
+    .from("coupons")
+    .select(COUPON_SELECT)
+    .eq("active", true)
+    .eq("featured", true)
+    .order("created_at", { ascending: false });
+  if (error) throw error;
+  return (data ?? []) as Coupon[];
 }
 
 /**

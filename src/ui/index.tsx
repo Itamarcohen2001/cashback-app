@@ -11,9 +11,12 @@ import {
   View,
   ViewStyle,
 } from "react-native";
+import * as Clipboard from "expo-clipboard";
+import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { brandLogoCandidates } from "@/lib/format";
-import { colors, font, gradients, radius, shadow, spacing } from "@/theme";
+import { Coupon } from "@/lib/types";
+import { colors, font, gradients, radius, rtl, shadow, spacing } from "@/theme";
 
 /** לוגו חנות: מנסה מספר מקורות לוגו אמיתיים, ונופל לאות ראשונה אם כולם נכשלו. */
 export function StoreLogo({
@@ -260,6 +263,128 @@ export function Badge({
   );
 }
 
+/** כפתור מועדפים (❤) — לחיצה מחליפה מצב. */
+export function HeartButton({
+  active,
+  onPress,
+  size = 22,
+}: {
+  active: boolean;
+  onPress: () => void;
+  size?: number;
+}) {
+  return (
+    <Pressable
+      onPress={onPress}
+      hitSlop={10}
+      accessibilityRole="button"
+      accessibilityLabel={active ? "הסרה ממועדפים" : "הוספה למועדפים"}
+      style={({ pressed }) => [
+        styles.heartBtn,
+        { width: size + 16, height: size + 16 },
+        pressed && styles.pressed,
+      ]}
+    >
+      <Ionicons
+        name={active ? "heart" : "heart-outline"}
+        size={size}
+        color={active ? colors.danger : colors.textMuted}
+      />
+    </Pressable>
+  );
+}
+
+/** כרטיס קופון/דיל עם קוד להעתקה. */
+export function CouponCard({
+  coupon,
+  onPress,
+}: {
+  coupon: Coupon;
+  onPress?: () => void;
+}) {
+  const [copied, setCopied] = useState(false);
+
+  async function copyCode() {
+    if (!coupon.code) return;
+    try {
+      await Clipboard.setStringAsync(coupon.code);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1800);
+    } catch {
+      // מתעלמים משגיאת העתקה.
+    }
+  }
+
+  const store = coupon.store;
+  return (
+    <Pressable
+      onPress={onPress}
+      style={({ pressed }) => [
+        styles.card,
+        shadow.sm,
+        { gap: spacing.sm },
+        pressed && onPress ? styles.pressed : null,
+      ]}
+    >
+      <View style={styles.couponHeader}>
+        {store ? (
+          <StoreLogo
+            store={{
+              name: store.name,
+              logo_url: store.logo_url ?? null,
+              base_url: store.base_url ?? "",
+            }}
+            size={44}
+          />
+        ) : null}
+        <View style={{ flex: 1, gap: 2 }}>
+          {store ? (
+            <Text style={styles.couponStore} numberOfLines={1}>
+              {store.name}
+            </Text>
+          ) : null}
+          <Text style={styles.couponTitle} numberOfLines={2}>
+            {coupon.title}
+          </Text>
+        </View>
+        {coupon.featured ? (
+          <View style={styles.hotBadge}>
+            <Text style={styles.hotBadgeText}>🔥 חם</Text>
+          </View>
+        ) : null}
+      </View>
+
+      {coupon.description ? (
+        <Text style={styles.couponDesc}>{coupon.description}</Text>
+      ) : null}
+
+      {coupon.code ? (
+        <Pressable
+          onPress={copyCode}
+          style={styles.codeRow}
+          accessibilityRole="button"
+          accessibilityLabel={`העתקת קוד קופון ${coupon.code}`}
+        >
+          <Ionicons
+            name={copied ? "checkmark-circle" : "copy-outline"}
+            size={18}
+            color={copied ? colors.success : colors.primary}
+          />
+          <Text style={styles.codeText}>
+            {copied ? "הקוד הועתק!" : coupon.code}
+          </Text>
+          {!copied ? <Text style={styles.codeHint}>הקישו להעתקה</Text> : null}
+        </Pressable>
+      ) : (
+        <View style={styles.autoDeal}>
+          <Ionicons name="pricetag" size={16} color={colors.accentDark} />
+          <Text style={styles.autoDealText}>דיל אוטומטי — ללא קוד</Text>
+        </View>
+      )}
+    </Pressable>
+  );
+}
+
 const styles = StyleSheet.create({
   card: {
     backgroundColor: colors.card,
@@ -267,6 +392,78 @@ const styles = StyleSheet.create({
     padding: spacing.lg,
     borderWidth: 1,
     borderColor: colors.border,
+  },
+  heartBtn: {
+    borderRadius: radius.pill,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: colors.card,
+    ...shadow.sm,
+  },
+  couponHeader: {
+    flexDirection: rtl.row,
+    alignItems: "center",
+    gap: spacing.md,
+  },
+  couponStore: {
+    fontSize: font.sm,
+    fontWeight: "700",
+    color: colors.textMuted,
+    textAlign: "right",
+  },
+  couponTitle: {
+    fontSize: font.md,
+    fontWeight: "800",
+    color: colors.text,
+    textAlign: "right",
+  },
+  couponDesc: {
+    fontSize: font.sm,
+    color: colors.textMuted,
+    textAlign: "right",
+    lineHeight: 20,
+  },
+  hotBadge: {
+    backgroundColor: colors.danger + "1F",
+    borderRadius: radius.pill,
+    paddingVertical: 4,
+    paddingHorizontal: spacing.sm,
+  },
+  hotBadgeText: { fontSize: font.sm, fontWeight: "900", color: colors.danger },
+  codeRow: {
+    flexDirection: rtl.row,
+    alignItems: "center",
+    gap: spacing.sm,
+    borderWidth: 1.5,
+    borderStyle: "dashed",
+    borderColor: colors.primary,
+    backgroundColor: colors.primaryLight,
+    borderRadius: radius.md,
+    paddingVertical: spacing.sm,
+    paddingHorizontal: spacing.md,
+  },
+  codeText: {
+    fontSize: font.md,
+    fontWeight: "900",
+    color: colors.primaryDark,
+    letterSpacing: 1,
+  },
+  codeHint: {
+    flex: 1,
+    fontSize: font.sm,
+    color: colors.textMuted,
+    textAlign: "left",
+  },
+  autoDeal: {
+    flexDirection: rtl.row,
+    alignItems: "center",
+    gap: spacing.xs,
+    alignSelf: rtl.start,
+  },
+  autoDealText: {
+    fontSize: font.sm,
+    fontWeight: "700",
+    color: colors.accentDark,
   },
   gradientWrap: { borderRadius: radius.lg, overflow: "hidden" },
   gradientInner: { borderRadius: radius.lg, padding: spacing.xl },

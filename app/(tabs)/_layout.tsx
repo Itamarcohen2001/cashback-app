@@ -41,6 +41,19 @@ export default function TabsLayout() {
         }}
       />
       <Tabs.Screen
+        name="deals"
+        options={{
+          title: "דילים",
+          tabBarIcon: ({ color, focused }) => (
+            <Ionicons
+              name={focused ? "pricetags" : "pricetags-outline"}
+              color={color}
+              size={24}
+            />
+          ),
+        }}
+      />
+      <Tabs.Screen
         name="wallet"
         options={{
           title: "ארנק",
