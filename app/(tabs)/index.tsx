@@ -65,6 +65,15 @@ export default function StoresScreen() {
     });
   }, [stores, query, category]);
 
+  // חנויות מומלצות: הקאשבק הגבוה ביותר.
+  const featured = useMemo(
+    () =>
+      [...stores]
+        .sort((a, b) => b.cashback_value - a.cashback_value)
+        .slice(0, 8),
+    [stores],
+  );
+
   return (
     <SafeAreaView style={styles.safe} edges={["top"]}>
       <FlatList
@@ -114,6 +123,35 @@ export default function StoresScreen() {
                 </View>
               </View>
             </GradientCard>
+
+            {featured.length > 0 && !query && !category ? (
+              <View style={{ gap: spacing.sm }}>
+                <Text style={styles.sectionTitle}>מומלצות 🔥</Text>
+                <ScrollView
+                  horizontal
+                  showsHorizontalScrollIndicator={false}
+                  contentContainerStyle={styles.featuredRow}
+                >
+                  {featured.map((s) => (
+                    <Pressable
+                      key={s.id}
+                      style={[styles.featuredCard, shadow.sm]}
+                      onPress={() => router.push(`/store/${s.id}`)}
+                    >
+                      <StoreLogo store={s} size={48} />
+                      <Text style={styles.featuredName} numberOfLines={1}>
+                        {s.name}
+                      </Text>
+                      <View style={styles.cashPill}>
+                        <Text style={styles.cashPillText}>
+                          {formatCashbackLabel(s.cashback_type, s.cashback_value)}
+                        </Text>
+                      </View>
+                    </Pressable>
+                  ))}
+                </ScrollView>
+              </View>
+            ) : null}
 
             <View style={styles.searchBar}>
               <Ionicons name="search" size={20} color={colors.textMuted} />
@@ -289,6 +327,21 @@ const styles = StyleSheet.create({
     fontWeight: "800",
     color: colors.text,
     textAlign: "right",
+  },
+  featuredRow: { gap: spacing.md, paddingVertical: 2, paddingHorizontal: 2 },
+  featuredCard: {
+    width: 120,
+    alignItems: "center",
+    gap: spacing.sm,
+    backgroundColor: colors.card,
+    borderRadius: radius.lg,
+    padding: spacing.md,
+  },
+  featuredName: {
+    fontSize: font.sm,
+    fontWeight: "800",
+    color: colors.text,
+    textAlign: "center",
   },
   searchBar: {
     flexDirection: rtl.row,
