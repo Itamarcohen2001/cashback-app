@@ -1,6 +1,5 @@
 import { useState } from "react";
 import {
-  Alert,
   KeyboardAvoidingView,
   Platform,
   Pressable,
@@ -16,6 +15,8 @@ import { useAuth } from "@/context/AuthContext";
 import { Button, Card, Input } from "@/ui";
 import { colors, font, radius, shadow, spacing } from "@/theme";
 
+type Msg = { text: string; ok: boolean } | null;
+
 export default function EditProfileScreen() {
   const { user, updateProfile, updatePassword } = useAuth();
   const router = useRouter();
@@ -23,38 +24,45 @@ export default function EditProfileScreen() {
   const [fullName, setFullName] = useState(user?.full_name ?? "");
   const [phone, setPhone] = useState(user?.phone ?? "");
   const [savingProfile, setSavingProfile] = useState(false);
+  const [profileMsg, setProfileMsg] = useState<Msg>(null);
 
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
   const [savingPassword, setSavingPassword] = useState(false);
+  const [pwdMsg, setPwdMsg] = useState<Msg>(null);
 
   async function onSaveProfile() {
+    setProfileMsg(null);
     if (!fullName.trim()) {
-      Alert.alert("שם חסר", "הזינו שם מלא.");
+      setProfileMsg({ text: "הזינו שם מלא.", ok: false });
       return;
     }
     if (phone.replace(/\D/g, "").length < 9) {
-      Alert.alert("טלפון לא תקין", "הזינו מספר טלפון חוקי לתשלום בביט.");
+      setProfileMsg({
+        text: "הזינו מספר טלפון חוקי לתשלום בביט.",
+        ok: false,
+      });
       return;
     }
     setSavingProfile(true);
     try {
       await updateProfile(fullName.trim(), phone.trim());
-      Alert.alert("נשמר", "הפרטים עודכנו בהצלחה.");
+      setProfileMsg({ text: "הפרטים עודכנו בהצלחה ✓", ok: true });
     } catch (e: any) {
-      Alert.alert("שגיאה", e?.message ?? "עדכון הפרטים נכשל.");
+      setProfileMsg({ text: e?.message ?? "עדכון הפרטים נכשל.", ok: false });
     } finally {
       setSavingProfile(false);
     }
   }
 
   async function onSavePassword() {
+    setPwdMsg(null);
     if (password.length < 6) {
-      Alert.alert("סיסמה קצרה", "הסיסמה חייבת להכיל לפחות 6 תווים.");
+      setPwdMsg({ text: "הסיסמה חייבת להכיל לפחות 6 תווים.", ok: false });
       return;
     }
     if (password !== confirm) {
-      Alert.alert("אי-התאמה", "הסיסמאות אינן תואמות.");
+      setPwdMsg({ text: "הסיסמאות אינן תואמות.", ok: false });
       return;
     }
     setSavingPassword(true);
@@ -62,9 +70,9 @@ export default function EditProfileScreen() {
       await updatePassword(password);
       setPassword("");
       setConfirm("");
-      Alert.alert("הסיסמה עודכנה", "הסיסמה שונתה בהצלחה.");
+      setPwdMsg({ text: "הסיסמה שונתה בהצלחה ✓", ok: true });
     } catch (e: any) {
-      Alert.alert("שגיאה", e?.message ?? "החלפת הסיסמה נכשלה.");
+      setPwdMsg({ text: e?.message ?? "החלפת הסיסמה נכשלה.", ok: false });
     } finally {
       setSavingPassword(false);
     }
@@ -100,6 +108,11 @@ export default function EditProfileScreen() {
               placeholder="050-0000000"
             />
             <Text style={styles.readonly}>אימייל: {user?.email}</Text>
+            {profileMsg ? (
+              <Text style={profileMsg.ok ? styles.ok : styles.err}>
+                {profileMsg.text}
+              </Text>
+            ) : null}
             <Button
               label="שמירת פרטים"
               onPress={onSaveProfile}
@@ -123,6 +136,11 @@ export default function EditProfileScreen() {
               secureTextEntry
               placeholder="הקלידו שוב"
             />
+            {pwdMsg ? (
+              <Text style={pwdMsg.ok ? styles.ok : styles.err}>
+                {pwdMsg.text}
+              </Text>
+            ) : null}
             <Button
               label="עדכון סיסמה"
               variant="secondary"
@@ -138,7 +156,11 @@ export default function EditProfileScreen() {
 
 const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: colors.bg },
-  container: { padding: spacing.lg, gap: spacing.lg, paddingBottom: spacing.xxl },
+  container: {
+    padding: spacing.lg,
+    gap: spacing.lg,
+    paddingBottom: spacing.xxl,
+  },
   headerRow: { flexDirection: "row", alignItems: "center", gap: spacing.sm },
   backBtn: {
     width: 42,
@@ -162,4 +184,6 @@ const styles = StyleSheet.create({
     textAlign: "right",
   },
   readonly: { fontSize: font.sm, color: colors.textMuted, textAlign: "right" },
+  ok: { fontSize: font.sm, color: colors.success, textAlign: "right", fontWeight: "700" },
+  err: { fontSize: font.sm, color: colors.danger, textAlign: "right", fontWeight: "700" },
 });

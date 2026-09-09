@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { I18nManager, Platform, StyleSheet, View } from "react-native";
-import { Slot, useRouter, useSegments } from "expo-router";
+import { Stack, useRouter, useSegments } from "expo-router";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
 import { AuthProvider, useAuth } from "@/context/AuthContext";
@@ -27,7 +27,7 @@ function AuthGate() {
     }
   }, [user, loading, segments]);
 
-  return <Slot />;
+  return <Stack screenOptions={{ headerShown: false }} />;
 }
 
 export default function RootLayout() {
