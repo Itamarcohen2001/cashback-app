@@ -68,10 +68,8 @@ function domainFromUrl(url: string): string {
 const LOGO_OVERRIDES: Record<string, string> = {
   "fox.co.il":
     "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9a/FOX_Israel_logo.svg/512px-FOX_Israel_logo.svg.png",
-  "shilav.co.il":
-    "https://www.shilav.co.il/cdn/shop/files/shilav-logo.png",
-  "alm.co.il":
-    "https://www.alm.co.il/media/logo/stores/1/alm-logo.png",
+  "shilav.co.il": "https://www.shilav.co.il/cdn/shop/files/shilav-logo.png",
+  "alm.co.il": "https://www.alm.co.il/media/logo/stores/1/alm-logo.png",
 };
 
 /**

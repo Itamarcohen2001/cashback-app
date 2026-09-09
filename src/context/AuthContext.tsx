@@ -21,6 +21,7 @@ interface AuthState {
   signInWithGoogle: () => Promise<void>;
   updateProfile: (fullName: string, phone: string) => Promise<void>;
   updatePassword: (newPassword: string) => Promise<void>;
+  deleteAccount: () => Promise<void>;
   signOut: () => Promise<void>;
 }
 
@@ -61,6 +62,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       },
       async updatePassword(newPassword) {
         await auth.updatePassword(newPassword);
+      },
+      async deleteAccount() {
+        await auth.deleteAccount();
+        setUser(null);
       },
       async signOut() {
         await auth.signOut();

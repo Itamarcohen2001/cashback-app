@@ -146,3 +146,22 @@ export async function updatePassword(newPassword: string): Promise<void> {
   const { error } = await supabase.auth.updateUser({ password: newPassword });
   if (error) throw error;
 }
+
+/**
+ * מחיקת החשבון של המשתמש המחובר.
+ * מחיקת משתמש ב-Supabase דורשת הרשאת שרת, ולכן קוראים ל-Edge Function
+ * שמאמת את ה-JWT ומוחקת את המשתמש בעזרת service role.
+ */
+export async function deleteAccount(): Promise<void> {
+  if (USE_MOCK) return mock.signOut();
+  const { data: sessionData } = await supabase.auth.getSession();
+  const token = sessionData.session?.access_token;
+  if (!token) throw new Error("לא מחובר");
+
+  const { error } = await supabase.functions.invoke("delete-account", {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (error) throw error;
+  await supabase.auth.signOut();
+}
+
