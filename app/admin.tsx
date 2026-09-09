@@ -1,5 +1,12 @@
 import { useCallback, useState } from "react";
-import { Alert, FlatList, StyleSheet, Text, View } from "react-native";
+import {
+  Alert,
+  FlatList,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 import { Stack, useFocusEffect, useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
@@ -13,7 +20,7 @@ import {
 import { formatDate, formatMoney } from "@/lib/format";
 import { CashbackTransaction, PayoutRequest, UserBrief } from "@/lib/types";
 import { Badge, Button, Card } from "@/ui";
-import { colors, font, radius, spacing } from "@/theme";
+import { colors, font, radius, rtl, shadow, spacing } from "@/theme";
 
 export default function AdminScreen() {
   const { user } = useAuth();
@@ -91,45 +98,67 @@ export default function AdminScreen() {
         ListHeaderComponent={
           <View style={{ gap: spacing.lg }}>
             <View style={styles.headerRow}>
-              <Ionicons
-                name="chevron-forward"
-                size={28}
-                color={colors.text}
+              <Pressable
                 onPress={() => router.back()}
-              />
+                style={styles.backBtn}
+              >
+                <Ionicons
+                  name="chevron-forward"
+                  size={22}
+                  color={colors.text}
+                />
+              </Pressable>
               <Text style={styles.title}>פאנל ניהול</Text>
             </View>
 
-            <Text style={styles.sectionTitle}>
-              בקשות משיכה ({requestedPayouts.length})
-            </Text>
-            {requestedPayouts.length === 0 ? (
-              <Text style={styles.empty}>אין בקשות משיכה ממתינות.</Text>
-            ) : (
-              requestedPayouts.map((p) => (
-                <Card key={p.id} style={styles.rowCard}>
-                  <View style={styles.rowTop}>
-                    <Text style={styles.amount}>{formatMoney(p.amount)}</Text>
-                    <Text style={styles.date}>{formatDate(p.created_at)}</Text>
-                  </View>
-                  <UserInfo user={p.user} />
-                  <Button
-                    label="סמן כשולם"
-                    onPress={() => markPaid(p.id)}
-                    loading={busyId === p.id}
-                  />
-                </Card>
-              ))
-            )}
+            <View style={styles.section}>
+              <View>
+                <Text style={styles.sectionTitle}>
+                  בקשות משיכה ({requestedPayouts.length})
+                </Text>
+                <Text style={styles.sectionSub}>
+                  לתשלום ידני בביט לפי הפרטים מטה
+                </Text>
+              </View>
+              {requestedPayouts.length === 0 ? (
+                <EmptyState
+                  icon="checkmark-done-circle-outline"
+                  text="אין בקשות משיכה ממתינות"
+                />
+              ) : (
+                requestedPayouts.map((p) => (
+                  <Card key={p.id} style={styles.rowCard}>
+                    <View style={styles.rowTop}>
+                      <Text style={styles.amount}>{formatMoney(p.amount)}</Text>
+                      <Text style={styles.date}>{formatDate(p.created_at)}</Text>
+                    </View>
+                    <UserInfo user={p.user} />
+                    <Button
+                      label="סמן כשולם"
+                      onPress={() => markPaid(p.id)}
+                      loading={busyId === p.id}
+                    />
+                  </Card>
+                ))
+              )}
+            </View>
 
-            <Text style={styles.sectionTitle}>
-              עסקאות ממתינות לאישור ({pending.length})
-            </Text>
+            <View style={styles.divider} />
+
+            <View>
+              <Text style={styles.sectionTitle}>
+                עסקאות ממתינות לאישור ({pending.length})
+              </Text>
+              <Text style={styles.sectionSub}>אשרו או דחו קאשבק שהתקבל</Text>
+            </View>
           </View>
         }
         ListEmptyComponent={
           !loading ? (
-            <Text style={styles.empty}>אין עסקאות ממתינות.</Text>
+            <EmptyState
+              icon="checkmark-circle-outline"
+              text="אין עסקאות ממתינות — הכל טופל!"
+            />
           ) : null
         }
         renderItem={({ item }) => (
@@ -194,25 +223,88 @@ function UserInfo({ user }: { user?: UserBrief }) {
   );
 }
 
+// מצב ריק מעוצב עם אייקון וטקסט ממורכזים.
+function EmptyState({
+  icon,
+  text,
+}: {
+  icon: keyof typeof Ionicons.glyphMap;
+  text: string;
+}) {
+  return (
+    <View style={styles.emptyBox}>
+      <View style={styles.emptyIcon}>
+        <Ionicons name={icon} size={28} color={colors.primary} />
+      </View>
+      <Text style={styles.emptyText}>{text}</Text>
+    </View>
+  );
+}
+
 const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: colors.bg },
-  list: { padding: spacing.xl, gap: spacing.md },
-  headerRow: { flexDirection: "row", alignItems: "center", gap: spacing.sm },
+  list: { padding: spacing.xl, paddingBottom: 130, gap: spacing.md },
+  headerRow: {
+    flexDirection: rtl.row,
+    alignItems: "center",
+    gap: spacing.sm,
+  },
+  backBtn: {
+    width: 42,
+    height: 42,
+    borderRadius: radius.md,
+    backgroundColor: colors.card,
+    alignItems: "center",
+    justifyContent: "center",
+    ...shadow.sm,
+  },
   title: {
+    flex: 1,
     fontSize: font.xxl,
-    fontWeight: "800",
+    fontWeight: "900",
     color: colors.text,
     textAlign: "right",
   },
+  section: { gap: spacing.md },
+  sectionSub: {
+    fontSize: font.sm,
+    color: colors.textMuted,
+    textAlign: "right",
+    marginTop: 2,
+  },
+  divider: {
+    height: 1,
+    backgroundColor: colors.border,
+    marginVertical: spacing.sm,
+  },
+  emptyBox: {
+    alignItems: "center",
+    gap: spacing.sm,
+    paddingVertical: spacing.xl,
+  },
+  emptyIcon: {
+    width: 56,
+    height: 56,
+    borderRadius: radius.pill,
+    backgroundColor: colors.primaryLight,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  emptyText: {
+    fontSize: font.md,
+    color: colors.textMuted,
+    fontWeight: "600",
+    textAlign: "center",
+  },
   sectionTitle: {
     fontSize: font.lg,
-    fontWeight: "700",
+    fontWeight: "800",
     color: colors.text,
     textAlign: "right",
   },
   rowCard: { gap: spacing.sm },
   rowTop: {
-    flexDirection: "row",
+    flexDirection: rtl.row,
     alignItems: "center",
     justifyContent: "space-between",
   },
@@ -238,18 +330,13 @@ const styles = StyleSheet.create({
     textAlign: "right",
   },
   userLine: {
-    flexDirection: "row",
+    flexDirection: rtl.row,
     alignItems: "center",
     gap: spacing.xs,
     justifyContent: "flex-end",
   },
   userText: { fontSize: font.sm, color: colors.text },
   actions: { flexDirection: "row", gap: spacing.md },
-  empty: {
-    textAlign: "center",
-    color: colors.textMuted,
-    marginVertical: spacing.md,
-  },
   denied: {
     textAlign: "center",
     color: colors.textMuted,

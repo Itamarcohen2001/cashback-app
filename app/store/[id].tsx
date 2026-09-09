@@ -21,15 +21,7 @@ import {
 import { formatCashbackLabel, formatMoney } from "@/lib/format";
 import { Store } from "@/lib/types";
 import { Button, Card, GradientCard, Input, StoreLogo } from "@/ui";
-import {
-  colors,
-  font,
-  gradients,
-  radius,
-  rtl,
-  shadow,
-  spacing,
-} from "@/theme";
+import { colors, font, gradients, radius, rtl, shadow, spacing } from "@/theme";
 
 export default function StoreScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();

@@ -18,15 +18,7 @@ import { fetchStores } from "@/lib/cashback";
 import { formatCashbackLabel } from "@/lib/format";
 import { Store } from "@/lib/types";
 import { GradientCard, StoreLogo } from "@/ui";
-import {
-  colors,
-  font,
-  gradients,
-  radius,
-  rtl,
-  shadow,
-  spacing,
-} from "@/theme";
+import { colors, font, gradients, radius, rtl, shadow, spacing } from "@/theme";
 
 export default function StoresScreen() {
   const router = useRouter();

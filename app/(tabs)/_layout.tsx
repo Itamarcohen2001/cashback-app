@@ -24,7 +24,14 @@ export default function TabsLayout() {
           backgroundColor: colors.card,
           ...shadow.md,
         },
-        tabBarLabelStyle: { fontWeight: "700", fontSize: 11, marginTop: 2 },
+        tabBarLabelStyle: {
+          fontWeight: "700",
+          fontSize: 11,
+          lineHeight: 16,
+          marginTop: 3,
+          paddingBottom: 2,
+          includeFontPadding: false,
+        },
       }}
     >
       <Tabs.Screen

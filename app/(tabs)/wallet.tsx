@@ -26,15 +26,7 @@ import {
   WalletSummary,
 } from "@/lib/types";
 import { Badge, Button, GradientCard } from "@/ui";
-import {
-  colors,
-  font,
-  gradients,
-  radius,
-  rtl,
-  shadow,
-  spacing,
-} from "@/theme";
+import { colors, font, gradients, radius, rtl, shadow, spacing } from "@/theme";
 
 const MIN_PAYOUT = 20;
 
