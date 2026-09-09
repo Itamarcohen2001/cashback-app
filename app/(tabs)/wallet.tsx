@@ -1,9 +1,11 @@
-import { useCallback, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
   FlatList,
+  Pressable,
   RefreshControl,
+  ScrollView,
   StyleSheet,
   Text,
   View,
@@ -46,6 +48,16 @@ const PAYOUT_META: Record<
   rejected: { label: "נדחה", color: colors.rejected },
 };
 
+type StatusFilter = CashbackStatus | "all";
+
+const FILTERS: { key: StatusFilter; label: string }[] = [
+  { key: "all", label: "הכל" },
+  { key: "confirmed", label: "אושר" },
+  { key: "pending", label: "ממתין לאישור" },
+  { key: "paid", label: "שולם" },
+  { key: "rejected", label: "נדחה" },
+];
+
 export default function WalletScreen() {
   const { user } = useAuth();
   const [txns, setTxns] = useState<CashbackTransaction[]>([]);
@@ -59,6 +71,12 @@ export default function WalletScreen() {
   const [loading, setLoading] = useState(true);
   const [requesting, setRequesting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [filter, setFilter] = useState<StatusFilter>("all");
+
+  const filteredTxns = useMemo(
+    () => (filter === "all" ? txns : txns.filter((t) => t.status === filter)),
+    [txns, filter],
+  );
 
   const load = useCallback(async () => {
     if (!user) return;
@@ -108,7 +126,7 @@ export default function WalletScreen() {
   return (
     <SafeAreaView style={styles.safe} edges={["top"]}>
       <FlatList
-        data={txns}
+        data={filteredTxns}
         keyExtractor={(t) => t.id}
         contentContainerStyle={styles.list}
         refreshControl={
@@ -219,6 +237,33 @@ export default function WalletScreen() {
             ) : null}
 
             <Text style={styles.sectionTitle}>היסטוריית קאשבק</Text>
+            {txns.length > 0 ? (
+              <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={styles.chipsRow}
+              >
+                {FILTERS.map((f) => {
+                  const active = filter === f.key;
+                  return (
+                    <Pressable
+                      key={f.key}
+                      onPress={() => setFilter(f.key)}
+                      style={[styles.chip, active && styles.chipActive]}
+                    >
+                      <Text
+                        style={[
+                          styles.chipText,
+                          active && styles.chipTextActive,
+                        ]}
+                      >
+                        {f.label}
+                      </Text>
+                    </Pressable>
+                  );
+                })}
+              </ScrollView>
+            ) : null}
             {error ? <Text style={styles.error}>{error}</Text> : null}
           </View>
         }
@@ -228,6 +273,8 @@ export default function WalletScreen() {
               color={colors.primary}
               style={{ marginTop: spacing.xl }}
             />
+          ) : txns.length > 0 ? (
+            <Text style={styles.empty}>אין עסקאות בסטטוס זה.</Text>
           ) : (
             <Text style={styles.empty}>
               עדיין אין עסקאות. הפעילו קאשבק בחנות כדי להתחיל.
@@ -350,6 +397,29 @@ const styles = StyleSheet.create({
     marginTop: spacing.md,
   },
   error: { color: colors.danger, textAlign: "right" },
+  chipsRow: {
+    flexDirection: rtl.row,
+    gap: spacing.sm,
+    paddingVertical: spacing.xs,
+  },
+  chip: {
+    paddingVertical: spacing.sm,
+    paddingHorizontal: spacing.lg,
+    borderRadius: radius.pill,
+    backgroundColor: colors.card,
+    borderWidth: 1,
+    borderColor: colors.border,
+  },
+  chipActive: {
+    backgroundColor: colors.primary,
+    borderColor: colors.primary,
+  },
+  chipText: {
+    fontSize: font.sm,
+    fontWeight: "700",
+    color: colors.textMuted,
+  },
+  chipTextActive: { color: colors.textInverse },
   empty: {
     textAlign: "center",
     color: colors.textMuted,

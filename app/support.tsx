@@ -96,7 +96,8 @@ export default function SupportScreen() {
         <Card style={{ gap: spacing.md }}>
           <Text style={styles.sectionTitle}>לא מצאתם תשובה?</Text>
           <Text style={styles.help}>
-            נשמח לעזור בכל שאלה, בעיה או בקשה. שלחו לנו פנייה ונחזור אליכם בהקדם.
+            נשמח לעזור בכל שאלה, בעיה או בקשה. שלחו לנו פנייה ונחזור אליכם
+            בהקדם.
           </Text>
           <Button
             label="שליחת בקשת תמיכה"
@@ -114,7 +115,11 @@ export default function SupportScreen() {
             variant="secondary"
             onPress={() => contact("דיווח על קאשבק חסר - CashyCash")}
             icon={
-              <Ionicons name="alert-circle-outline" size={20} color={colors.primary} />
+              <Ionicons
+                name="alert-circle-outline"
+                size={20}
+                color={colors.primary}
+              />
             }
           />
           <Pressable

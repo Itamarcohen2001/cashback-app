@@ -1,10 +1,4 @@
-import {
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
+import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { Stack, useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
@@ -19,7 +13,7 @@ const SECTIONS = [
   },
   {
     h: "אופן פעולת הקאשבק",
-    p: "הקאשבק מותנה ברכישה שמבוצעת דרך הקישורים באפליקציה ובאישורה הסופי ע\"י החנות ורשת השותפים. סכומים ושיעורים המוצגים באפליקציה הם הערכה ועשויים להשתנות בהתאם לתנאי החנות.",
+    p: 'הקאשבק מותנה ברכישה שמבוצעת דרך הקישורים באפליקציה ובאישורה הסופי ע"י החנות ורשת השותפים. סכומים ושיעורים המוצגים באפליקציה הם הערכה ועשויים להשתנות בהתאם לתנאי החנות.',
   },
   {
     h: "זיכוי ותשלום",
@@ -27,7 +21,7 @@ const SECTIONS = [
   },
   {
     h: "ביטולים והחזרות",
-    p: "אם רכישה בוטלה, הוחזרה או לא אושרה ע\"י החנות, הקאשבק המתאים לא ישולם או יבוטל בהתאם.",
+    p: 'אם רכישה בוטלה, הוחזרה או לא אושרה ע"י החנות, הקאשבק המתאים לא ישולם או יבוטל בהתאם.',
   },
   {
     h: "אחריות",
@@ -67,7 +61,9 @@ export default function TermsScreen() {
               <Text style={styles.p}>{s.p}</Text>
             </View>
           ))}
-          <Text style={styles.p}>לשאלות ניתן לפנות אלינו במייל: {SUPPORT_EMAIL}</Text>
+          <Text style={styles.p}>
+            לשאלות ניתן לפנות אלינו במייל: {SUPPORT_EMAIL}
+          </Text>
         </Card>
       </ScrollView>
     </SafeAreaView>

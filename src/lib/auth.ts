@@ -164,4 +164,3 @@ export async function deleteAccount(): Promise<void> {
   if (error) throw error;
   await supabase.auth.signOut();
 }
-

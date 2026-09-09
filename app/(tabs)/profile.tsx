@@ -84,13 +84,22 @@ export default function ProfileScreen() {
   }
 
   const steps = [
-    { icon: "storefront-outline", text: "בוחרים חנות ומפעילים קאשבק." },
-    { icon: "cart-outline", text: "קונים כרגיל דרך הקישור." },
+    {
+      icon: "storefront-outline",
+      text: 'בוחרים חנות מהרשימה ולוחצים על "הפעלת קאשבק".',
+    },
+    {
+      icon: "cart-outline",
+      text: "קונים כרגיל באתר החנות שנפתח — בלי צורך בקודים או קופונים.",
+    },
     {
       icon: "hourglass-outline",
-      text: 'הקאשבק נכנס כ"ממתין" ומאושר לאחר אישור החנות.',
+      text: 'הקאשבק נרשם כ"ממתין", ומתאשר אוטומטית לאחר שהחנות מאשרת את הרכישה.',
     },
-    { icon: "cash-outline", text: "מגיעים לסכום המינימלי ומושכים לחשבון." },
+    {
+      icon: "cash-outline",
+      text: "כשמגיעים לסכום המינימלי מבקשים משיכה, והכסף מועבר אליכם בביט.",
+    },
   ] as const;
 
   return (
