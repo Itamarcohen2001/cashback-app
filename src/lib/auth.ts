@@ -22,16 +22,30 @@ function mapSupabaseUser(u: User | null | undefined): AppUser | null {
   };
 }
 
+// מוסיף את דגל הניהול מטבלת profiles (מקור האמת המאובטח).
+async function withAdminFlag(
+  u: User | null | undefined,
+): Promise<AppUser | null> {
+  const base = mapSupabaseUser(u);
+  if (!base) return null;
+  const { data } = await supabase
+    .from("profiles")
+    .select("is_admin")
+    .eq("id", base.id)
+    .maybeSingle();
+  return { ...base, is_admin: Boolean(data?.is_admin) };
+}
+
 export async function getCurrentUser(): Promise<AppUser | null> {
   if (USE_MOCK) return mock.getSessionUser();
   const { data } = await supabase.auth.getSession();
-  return mapSupabaseUser(data.session?.user);
+  return withAdminFlag(data.session?.user);
 }
 
 export function onAuthChange(cb: (user: AppUser | null) => void): () => void {
   if (USE_MOCK) return mock.subscribe(cb);
   const { data } = supabase.auth.onAuthStateChange((_event, session) => {
-    cb(mapSupabaseUser(session?.user));
+    withAdminFlag(session?.user).then(cb);
   });
   return () => data.subscription.unsubscribe();
 }
