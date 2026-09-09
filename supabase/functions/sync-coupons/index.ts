@@ -69,6 +69,15 @@ Deno.serve(async (req) => {
 
   if (error) return json({ error: error.message }, 500);
 
+  // מחיקת קופוני-רשת ישנים שכבר לא נמשכים (סוננו/הוסרו) — קופונים ידניים (network=null) לא נגעים.
+  const keepIds = rows.map((r) => r.network_coupon_id);
+  const { error: delErr } = await db
+    .from("coupons")
+    .delete()
+    .eq("network", network.name)
+    .not("network_coupon_id", "in", `(${keepIds.join(",")})`);
+  if (delErr) return json({ error: delErr.message }, 500);
+
   return json({
     ok: true,
     synced: rows.length,

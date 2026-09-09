@@ -83,6 +83,7 @@ interface AdmitadCoupon {
   rating?: string | number | null;
   advcampaign?: { id: number } | null;
   campaign?: { id: number } | null;
+  regions?: Array<string | { region?: string; code?: string }> | null;
 }
 
 class AdmitadNetwork implements AffiliateNetwork {
@@ -186,13 +187,14 @@ class AdmitadNetwork implements AffiliateNetwork {
       for (const c of results) {
         const campaignId = c.advcampaign?.id ?? c.campaign?.id;
         if (!campaignId) continue;
+        if (!isCouponRegionRelevant(c)) continue;
         const rating = c.rating != null ? Number(c.rating) : NaN;
         const summary = summarizeCouponHe(c);
         coupons.push({
           externalId: String(c.id),
           campaignExternalId: String(campaignId),
           title: summary.title,
-          code: c.promocode?.trim() || null,
+          code: normalizePromocode(c.promocode),
           description: summary.description,
           expiresAt: c.date_end ?? null,
           featured: !Number.isNaN(rating) && rating >= 4,
@@ -286,6 +288,38 @@ function parseAdmitadRate(c: AdmitadCampaign): {
   return { cashbackType: "percent", cashbackValue: 5 };
 }
 
+/** מנרמל קוד קופון: "NOT REQUIRED"/ריק וכו' -> null (דיל אוטומטי ללא קוד). */
+function normalizePromocode(raw?: string | null): string | null {
+  const code = (raw ?? "").trim();
+  if (!code) return null;
+  if (/^(not required|no code|none|n\/?a|не требуется)$/i.test(code)) return null;
+  return code;
+}
+
+/**
+ * מחזיר את קודי האזור של הקופון (ISO) באותיות גדולות. תומך במבנה מחרוזות או אובייקטים.
+ */
+function couponRegionCodes(c: AdmitadCoupon): string[] {
+  const arr = c.regions;
+  if (!Array.isArray(arr)) return [];
+  return arr
+    .map((r) => (typeof r === "string" ? r : (r.region ?? r.code ?? "")))
+    .map((s) => s.trim().toUpperCase())
+    .filter(Boolean);
+}
+
+/** מוותרים על קופונים אזוריים שלא רלוונטיים — שומרים גלובלי/ישראל בלבד. */
+function isCouponRegionRelevant(c: AdmitadCoupon): boolean {
+  const allow = (Deno.env.get("COUPON_REGIONS") ?? "IL")
+    .split(",")
+    .map((s) => s.trim().toUpperCase())
+    .filter(Boolean);
+  const globals = ["WW", "WORLD", "GLOBAL", "INT", "INTL", "ALL"];
+  const codes = couponRegionCodes(c);
+  if (codes.length === 0) return true; // ללא אזור מוגדר = גלובלי
+  return codes.some((x) => allow.includes(x) || globals.includes(x));
+}
+
 /**
  * בונה סיכום קצר בעברית לקופון מתוך השדות המובנים (במקום הטקסט הגולמי באנגלית/רוסית).
  * מחזיר כותרת קצרה + תיאור מינימלי (קוד/תוקף) — "בלי הרבה מלל".
@@ -299,6 +333,7 @@ function summarizeCouponHe(c: AdmitadCoupon): {
   const freeShip = /free ship|free deliver|бесплатн\w* доставк|משלוח חינם/i.test(
     blob,
   );
+  const code = normalizePromocode(c.promocode);
 
   // אחוז הנחה (למשל 70%)
   const pct = blob.match(/(\d{1,3})\s*%/);
@@ -314,14 +349,15 @@ function summarizeCouponHe(c: AdmitadCoupon): {
     title = `${sym}${num} הנחה`;
   } else if (freeShip) {
     title = "משלוח חינם";
-  } else if (c.promocode) {
+  } else if (code) {
     title = "קופון הנחה";
   } else {
     title = "מבצע";
   }
 
   const parts: string[] = [];
-  if (c.promocode) parts.push("בקוד קופון");
+  if (code) parts.push("בקוד קופון");
+  else parts.push("מוחל אוטומטית");
   if (c.date_end) {
     const d = new Date(c.date_end);
     if (!Number.isNaN(d.getTime())) {
