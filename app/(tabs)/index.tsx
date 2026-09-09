@@ -1,5 +1,6 @@
 import { useCallback, useMemo, useState } from "react";
 import {
+  ActivityIndicator,
   FlatList,
   Image,
   Pressable,
@@ -150,14 +151,19 @@ export default function StoresScreen() {
           </View>
         }
         ListEmptyComponent={
-          !loading ? (
+          loading ? (
+            <ActivityIndicator
+              color={colors.primary}
+              style={{ marginTop: spacing.xxl }}
+            />
+          ) : (
             <Text style={styles.empty}>
               {error ??
                 (stores.length
                   ? "לא נמצאו חנויות התואמות לחיפוש."
                   : "אין חנויות זמינות עדיין.")}
             </Text>
-          ) : null
+          )
         }
         renderItem={({ item }) => (
           <Pressable

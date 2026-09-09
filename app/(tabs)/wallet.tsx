@@ -1,5 +1,6 @@
 import { useCallback, useState } from "react";
 import {
+  ActivityIndicator,
   Alert,
   FlatList,
   RefreshControl,
@@ -194,11 +195,16 @@ export default function WalletScreen() {
           </View>
         }
         ListEmptyComponent={
-          !loading ? (
+          loading ? (
+            <ActivityIndicator
+              color={colors.primary}
+              style={{ marginTop: spacing.xl }}
+            />
+          ) : (
             <Text style={styles.empty}>
               עדיין אין עסקאות. הפעילו קאשבק בחנות כדי להתחיל.
             </Text>
-          ) : null
+          )
         }
         renderItem={({ item }) => {
           const meta = STATUS_META[item.status];
