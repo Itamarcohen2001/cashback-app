@@ -306,7 +306,7 @@ const styles = StyleSheet.create({
     marginTop: spacing.xs,
   },
   statsRow: {
-    flexDirection: "row",
+    flexDirection: rtl.row,
     alignItems: "center",
     justifyContent: "center",
     gap: spacing.xl,

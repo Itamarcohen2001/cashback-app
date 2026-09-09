@@ -225,7 +225,9 @@ export default function StoresScreen() {
           >
             <StoreLogo store={item} size={56} />
             <View style={{ flex: 1, gap: 2 }}>
-              <Text style={styles.storeName}>{item.name}</Text>
+              <Text style={styles.storeName} numberOfLines={1}>
+                {item.name}
+              </Text>
               {item.category ? (
                 <Text style={styles.category}>{item.category}</Text>
               ) : null}
@@ -400,17 +402,7 @@ const styles = StyleSheet.create({
     fontWeight: "900",
     fontSize: font.sm,
   },
-  logo: {
-    width: 56,
-    height: 56,
-    borderRadius: radius.md,
-    backgroundColor: colors.primaryLight,
-    alignItems: "center",
-    justifyContent: "center",
-    overflow: "hidden",
-  },
   logoImg: { width: "100%", height: "100%" },
-  logoText: { fontSize: font.xl, fontWeight: "900", color: colors.primary },
   storeName: {
     fontSize: font.lg,
     fontWeight: "800",

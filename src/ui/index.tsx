@@ -155,7 +155,12 @@ export function Button({
 
   if (variant === "primary") {
     return (
-      <Pressable onPress={onPress} disabled={isDisabled}>
+      <Pressable
+        onPress={onPress}
+        disabled={isDisabled}
+        accessibilityRole="button"
+        accessibilityLabel={label}
+      >
         {({ pressed }) => (
           <View
             style={[
@@ -182,6 +187,8 @@ export function Button({
     <Pressable
       onPress={onPress}
       disabled={isDisabled}
+      accessibilityRole="button"
+      accessibilityLabel={label}
       style={({ pressed }) => [
         styles.btn,
         variant === "secondary" && styles.btnSecondary,

@@ -211,17 +211,6 @@ const styles = StyleSheet.create({
     ...shadow.sm,
   },
   hero: { alignItems: "center", gap: spacing.sm },
-  logo: {
-    width: 88,
-    height: 88,
-    borderRadius: radius.lg,
-    backgroundColor: "rgba(255,255,255,0.22)",
-    alignItems: "center",
-    justifyContent: "center",
-    overflow: "hidden",
-  },
-  logoImg: { width: "100%", height: "100%" },
-  logoText: { fontSize: 40, fontWeight: "900", color: colors.textInverse },
   name: { fontSize: font.xxl, fontWeight: "900", color: colors.textInverse },
   category: { fontSize: font.md, color: "#EDEBFF" },
   cashbackPill: {
@@ -261,7 +250,7 @@ const styles = StyleSheet.create({
     gap: spacing.sm,
   },
   demoHeader: {
-    flexDirection: "row",
+    flexDirection: rtl.row,
     alignItems: "center",
     gap: spacing.xs,
     justifyContent: "flex-end",
