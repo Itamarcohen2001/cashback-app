@@ -1,5 +1,6 @@
 import * as Crypto from "expo-crypto";
 import * as WebBrowser from "expo-web-browser";
+import { Platform } from "react-native";
 import { isSupabaseConfigured, supabase } from "./supabase";
 import {
   CashbackTransaction,
@@ -51,6 +52,13 @@ export async function activateCashback(
   const token = Crypto.randomUUID();
   const redirectUrl = buildAffiliateUrl(store, token);
 
+  // ב-web: פותחים לשונית מיד על לחיצת המשתמש כדי שהדפדפן לא יחסום פופ-אפ.
+  const isWeb = Platform.OS === "web";
+  const webWindow =
+    isWeb && typeof window !== "undefined"
+      ? window.open(redirectUrl, "_blank")
+      : null;
+
   if (USE_MOCK) {
     await mock.createClick(userId, store.id, token, redirectUrl);
   } else {
@@ -63,7 +71,12 @@ export async function activateCashback(
     if (error) throw error;
   }
 
-  await WebBrowser.openBrowserAsync(redirectUrl);
+  if (!isWeb) {
+    await WebBrowser.openBrowserAsync(redirectUrl);
+  } else if (!webWindow && typeof window !== "undefined") {
+    // אם הפופ-אפ נחסם — ניווט באותה לשונית כגיבוי.
+    window.location.href = redirectUrl;
+  }
   return redirectUrl;
 }
 

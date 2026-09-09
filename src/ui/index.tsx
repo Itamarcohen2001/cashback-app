@@ -20,7 +20,7 @@ export function StoreLogo({
   store,
   size = 56,
   cornerRadius = radius.md,
-  background = colors.primaryLight,
+  background = colors.bg,
   letterColor = colors.primary,
 }: {
   store: { name: string; logo_url: string | null; base_url: string };

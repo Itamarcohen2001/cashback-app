@@ -99,7 +99,9 @@ export default function AdminScreen() {
           <View style={{ gap: spacing.lg }}>
             <View style={styles.headerRow}>
               <Pressable
-                onPress={() => router.back()}
+                onPress={() =>
+                  router.canGoBack() ? router.back() : router.replace("/(tabs)")
+                }
                 style={styles.backBtn}
               >
                 <Ionicons
@@ -130,7 +132,9 @@ export default function AdminScreen() {
                   <Card key={p.id} style={styles.rowCard}>
                     <View style={styles.rowTop}>
                       <Text style={styles.amount}>{formatMoney(p.amount)}</Text>
-                      <Text style={styles.date}>{formatDate(p.created_at)}</Text>
+                      <Text style={styles.date}>
+                        {formatDate(p.created_at)}
+                      </Text>
                     </View>
                     <UserInfo user={p.user} />
                     <Button

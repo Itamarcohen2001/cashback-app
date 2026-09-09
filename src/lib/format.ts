@@ -39,18 +39,22 @@ function domainFromUrl(url: string): string {
 }
 
 /**
- * מחזיר רשימת מקורות ללוגו המותג, לניסיון לפי סדר (Clearbit ואז favicon של Google).
+ * מחזיר רשימת מקורות ללוגו המותג, לניסיון לפי סדר.
+ * (Clearbit נסגר ב-2023, לכן משתמשים ב-favicon של Google/DuckDuckGo.)
  */
 export function brandLogoCandidates(store: {
   logo_url: string | null;
   base_url: string;
 }): string[] {
   const out: string[] = [];
-  if (store.logo_url) out.push(store.logo_url);
   const domain = domainFromUrl(store.base_url);
+  // לוגו אמיתי מהרשת — אבל לא SVG (React Native לא מרנדר SVG).
+  if (store.logo_url && !store.logo_url.toLowerCase().endsWith(".svg")) {
+    out.push(store.logo_url);
+  }
   if (domain) {
-    out.push(`https://logo.clearbit.com/${domain}`);
     out.push(`https://www.google.com/s2/favicons?sz=128&domain=${domain}`);
+    out.push(`https://icons.duckduckgo.com/ip3/${domain}.ico`);
   }
   return out;
 }

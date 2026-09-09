@@ -16,22 +16,15 @@ export default function TabsLayout() {
           left: 16,
           right: 16,
           bottom: Platform.OS === "ios" ? 24 : 16,
-          height: 76,
-          paddingBottom: 12,
-          paddingTop: 12,
+          height: 84,
+          paddingBottom: 16,
+          paddingTop: 10,
           borderRadius: radius.xl,
           borderTopWidth: 0,
           backgroundColor: colors.card,
           ...shadow.md,
         },
-        tabBarLabelStyle: {
-          fontWeight: "700",
-          fontSize: 11,
-          lineHeight: 16,
-          marginTop: 3,
-          paddingBottom: 2,
-          includeFontPadding: false,
-        },
+        tabBarLabelStyle: { fontWeight: "700", fontSize: 12, lineHeight: 18 },
       }}
     >
       <Tabs.Screen

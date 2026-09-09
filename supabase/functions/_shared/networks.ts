@@ -116,7 +116,7 @@ class AdmitadNetwork implements AffiliateNetwork {
         offers.push({
           externalId: String(c.id),
           name: c.name,
-          category: c.categories?.[0]?.name ?? null,
+          category: mapCategory(c.categories?.[0]?.name),
           description: null,
           logoUrl: c.image ?? null,
           baseUrl: c.site_url ?? "",
@@ -155,6 +155,18 @@ class AdmitadNetwork implements AffiliateNetwork {
       networkTxnId: q("action_id") ?? q("order_id") ?? null,
     };
   }
+}
+
+/** ממפה קטגוריה מהרשת (רוסית/אנגלית) לעברית; אם לא מזוהה — null (ללא שפה זרה). */
+function mapCategory(name?: string): string | null {
+  if (!name) return null;
+  const n = name.toLowerCase();
+  if (n.includes("маркетплейс") || n.includes("marketplace") || n.includes("кита")) return "קניות כלליות";
+  if (n.includes("одежд") || n.includes("fashion") || n.includes("clothing") || n.includes("мод")) return "אופנה";
+  if (n.includes("электрон") || n.includes("electronic") || n.includes("gadget")) return "אלקטרוניקה";
+  if (n.includes("travel") || n.includes("путеш") || n.includes("отел") || n.includes("hotel") || n.includes("flight")) return "טיסות ומלונות";
+  if (n.includes("health") || n.includes("beauty") || n.includes("здоров") || n.includes("красот")) return "בריאות וטבע";
+  return null;
 }
 
 /** מנסה לחלץ שיעור עמלה מתוך פרטי הקמפיין; ברירת מחדל 5% אם לא נמצא. */

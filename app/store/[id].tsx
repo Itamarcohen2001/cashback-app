@@ -96,7 +96,12 @@ export default function StoreScreen() {
         contentContainerStyle={styles.container}
         showsVerticalScrollIndicator={false}
       >
-        <Pressable onPress={() => router.back()} style={styles.backBtn}>
+        <Pressable
+          onPress={() =>
+            router.canGoBack() ? router.back() : router.replace("/(tabs)")
+          }
+          style={styles.backBtn}
+        >
           <Ionicons name="chevron-forward" size={22} color={colors.text} />
         </Pressable>
 

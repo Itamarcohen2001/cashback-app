@@ -91,7 +91,12 @@ export default function EditProfileScreen() {
           showsVerticalScrollIndicator={false}
         >
           <View style={styles.headerRow}>
-            <Pressable onPress={() => router.back()} style={styles.backBtn}>
+            <Pressable
+              onPress={() =>
+                router.canGoBack() ? router.back() : router.replace("/(tabs)")
+              }
+              style={styles.backBtn}
+            >
               <Ionicons name="chevron-forward" size={22} color={colors.text} />
             </Pressable>
             <Text style={styles.title}>עריכת פרופיל</Text>
