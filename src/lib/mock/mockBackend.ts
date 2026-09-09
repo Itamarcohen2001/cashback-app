@@ -291,6 +291,27 @@ export async function signOut(): Promise<void> {
   notify();
 }
 
+export async function updateProfile(
+  fullName: string,
+  phone: string,
+): Promise<void> {
+  const d = await load();
+  const u = d.users.find((x) => x.id === d.sessionUserId);
+  if (!u) throw new Error("לא מחובר");
+  u.full_name = fullName || null;
+  u.phone = phone || null;
+  await persist();
+  notify();
+}
+
+export async function updatePassword(newPassword: string): Promise<void> {
+  const d = await load();
+  const u = d.users.find((x) => x.id === d.sessionUserId);
+  if (!u) throw new Error("לא מחובר");
+  u.password = newPassword;
+  await persist();
+}
+
 // ===================== Stores =====================
 
 export async function listStores(): Promise<Store[]> {

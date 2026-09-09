@@ -117,3 +117,32 @@ export async function signInWithGoogle(): Promise<void> {
     if (exchangeErr) throw exchangeErr;
   }
 }
+
+/** עדכון פרטי הפרופיל (שם + טלפון) — מסונכרן גם ל-user_metadata וגם לטבלת profiles. */
+export async function updateProfile(
+  fullName: string,
+  phone: string,
+): Promise<void> {
+  if (USE_MOCK) return mock.updateProfile(fullName, phone);
+  const { data: sessionData } = await supabase.auth.getSession();
+  const uid = sessionData.session?.user.id;
+  if (!uid) throw new Error("לא מחובר");
+
+  const { error: metaErr } = await supabase.auth.updateUser({
+    data: { full_name: fullName, phone },
+  });
+  if (metaErr) throw metaErr;
+
+  const { error } = await supabase
+    .from("profiles")
+    .update({ full_name: fullName, phone })
+    .eq("id", uid);
+  if (error) throw error;
+}
+
+/** החלפת סיסמת המשתמש המחובר. */
+export async function updatePassword(newPassword: string): Promise<void> {
+  if (USE_MOCK) return mock.updatePassword(newPassword);
+  const { error } = await supabase.auth.updateUser({ password: newPassword });
+  if (error) throw error;
+}

@@ -80,6 +80,15 @@ export default function ProfileScreen() {
           />
         ) : null}
 
+        <Button
+          label="עריכת פרופיל"
+          variant="secondary"
+          onPress={() => router.push("/edit-profile")}
+          icon={
+            <Ionicons name="create-outline" size={20} color={colors.primary} />
+          }
+        />
+
         <Button label="התנתקות" variant="secondary" onPress={signOut} />
       </ScrollView>
     </SafeAreaView>
