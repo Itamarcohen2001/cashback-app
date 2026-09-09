@@ -15,7 +15,7 @@ import {
   UserBrief,
 } from "../types";
 
-const STORAGE_KEY = "cashy_mock_db_v3";
+const STORAGE_KEY = "cashy_mock_db_v4";
 
 interface MockUser {
   id: string;
@@ -239,7 +239,7 @@ function seedStores(): Store[] {
       "GOLF",
       "אופנה",
       "אופנה ואקססוריז.",
-      "https://www.golf.co.il",
+      "https://www.golf-fashion.co.il",
       "percent",
       5,
       60,
@@ -284,7 +284,7 @@ function seedStores(): Store[] {
       "נעמן",
       "בית וריהוט",
       "כלי בית ומתנות.",
-      "https://www.naamanp.co.il",
+      "https://www.naaman.co.il",
       "percent",
       4,
       60,
