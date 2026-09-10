@@ -1,0 +1,1384 @@
+{
+  "active": [
+    {
+      "name": "Alibaba",
+      "domain": "alibaba.com",
+      "campaign": "Alibaba WW"
+    },
+    {
+      "name": "AliExpress",
+      "domain": "aliexpress.com",
+      "campaign": "AliExpress WW"
+    },
+    {
+      "name": "Geekbuying",
+      "domain": "geekbuying.com",
+      "campaign": "Geekbuying WW"
+    },
+    {
+      "name": "StyleWe",
+      "domain": "stylewe.com",
+      "campaign": "Stylewe WW"
+    },
+    {
+      "name": "SunSky",
+      "domain": "sunsky-online.com",
+      "campaign": "Sunsky-online WW"
+    },
+    {
+      "name": "The Luxury Closet",
+      "domain": "theluxurycloset.com",
+      "campaign": "The Luxury Closet WW"
+    }
+  ],
+  "pending": [
+    {
+      "name": "Adorama",
+      "domain": "adorama.com",
+      "campaign": "Adorama WW"
+    },
+    {
+      "name": "Airalo",
+      "domain": "airalo.com",
+      "campaign": "Airalo WW"
+    },
+    {
+      "name": "DHgate",
+      "domain": "dhgate.com",
+      "campaign": "DHgate WW"
+    },
+    {
+      "name": "Etihad Airways",
+      "domain": "etihad.com",
+      "campaign": "Etihad [CPS] WW"
+    },
+    {
+      "name": "Fiverr",
+      "domain": "fiverr.com",
+      "campaign": "Fiverr Many GEO's"
+    },
+    {
+      "name": "Gamivo",
+      "domain": "gamivo.com",
+      "campaign": "Gamivo WW"
+    },
+    {
+      "name": "GlassesLit",
+      "domain": "glasseslit.com",
+      "campaign": "Glasseslit WW"
+    },
+    {
+      "name": "Green Man Gaming",
+      "domain": "greenmangaming.com",
+      "campaign": "Green Man Gaming WW"
+    },
+    {
+      "name": "iHerb",
+      "domain": "iherb.com",
+      "campaign": "iHerb WW"
+    },
+    {
+      "name": "Joom",
+      "domain": "joom.com",
+      "campaign": "Joom Many GEOs"
+    },
+    {
+      "name": "Kinguin",
+      "domain": "kinguin.net",
+      "campaign": "Kinguin WW"
+    },
+    {
+      "name": "Kiwi.com",
+      "domain": "kiwi.com",
+      "campaign": "Kiwi.com Many GEO's"
+    },
+    {
+      "name": "Klook",
+      "domain": "klook.com",
+      "campaign": "Klook WW"
+    },
+    {
+      "name": "NordVPN",
+      "domain": "nordvpn.com",
+      "campaign": "NordVPN WW"
+    },
+    {
+      "name": "PureVPN",
+      "domain": "purevpn.com",
+      "campaign": "PureVPN Many Geos"
+    },
+    {
+      "name": "Shein",
+      "domain": "shein.com",
+      "campaign": "SHEIN Many GEOs"
+    },
+    {
+      "name": "Shutterstock",
+      "domain": "shutterstock.com",
+      "campaign": "Shutterstock.com WW"
+    },
+    {
+      "name": "Tiqets",
+      "domain": "tiqets.com",
+      "campaign": "Tiqets WW"
+    },
+    {
+      "name": "Trip.com",
+      "domain": "trip.com",
+      "campaign": "Trip.com"
+    },
+    {
+      "name": "Udemy",
+      "domain": "udemy.com",
+      "campaign": "Udemy WW"
+    },
+    {
+      "name": "Walmart",
+      "domain": "walmart.com",
+      "campaign": "Walmart US"
+    },
+    {
+      "name": "Wish",
+      "domain": "wish.com",
+      "campaign": "Wish Many GEOs"
+    }
+  ],
+  "available": [
+    {
+      "name": "G2A",
+      "domain": "g2a.com",
+      "campaign": "G2A Many GEOs",
+      "status": "declined"
+    }
+  ],
+  "missing": [
+    {
+      "name": "המשביר 365",
+      "domain": "365mashbir.co.il"
+    },
+    {
+      "name": "4chef",
+      "domain": "4chef.co.il"
+    },
+    {
+      "name": "AbeBooks",
+      "domain": "abebooks.com"
+    },
+    {
+      "name": "Accessorize",
+      "domain": "accessorize.com"
+    },
+    {
+      "name": "ACE",
+      "domain": "ace.co.il"
+    },
+    {
+      "name": "עדה לזורגן",
+      "domain": "adahlazorgan.co.il"
+    },
+    {
+      "name": "Adidas",
+      "domain": "adidas.co.il"
+    },
+    {
+      "name": "AFI Hotels",
+      "domain": "afi-hotels.com"
+    },
+    {
+      "name": "Agoda",
+      "domain": "agoda.com"
+    },
+    {
+      "name": "AHAVA",
+      "domain": "ahava.com"
+    },
+    {
+      "name": "אהבה קטנה",
+      "domain": "ahavaktana.co.il"
+    },
+    {
+      "name": "AirHelp",
+      "domain": "airhelp.com"
+    },
+    {
+      "name": "Air India",
+      "domain": "airindia.com"
+    },
+    {
+      "name": "Albume",
+      "domain": "albume.co.il"
+    },
+    {
+      "name": "All In Pro",
+      "domain": "allinpro.co.il"
+    },
+    {
+      "name": "Allur",
+      "domain": "allur.co.il"
+    },
+    {
+      "name": "אלם",
+      "domain": "alm.co.il"
+    },
+    {
+      "name": "אלוף הספורט",
+      "domain": "alufsport.co.il"
+    },
+    {
+      "name": "Amaro",
+      "domain": "amaro.com"
+    },
+    {
+      "name": "Amazon",
+      "domain": "amazon.com"
+    },
+    {
+      "name": "Amika",
+      "domain": "loveamika.com"
+    },
+    {
+      "name": "ארד טקסטיל",
+      "domain": "aradtextile.co.il"
+    },
+    {
+      "name": "Argento",
+      "domain": "argento.com"
+    },
+    {
+      "name": "ASOS",
+      "domain": "asos.com"
+    },
+    {
+      "name": "Auto Depot",
+      "domain": "autodepot.co.il"
+    },
+    {
+      "name": "Avast",
+      "domain": "avast.com"
+    },
+    {
+      "name": "AVG",
+      "domain": "avg.com"
+    },
+    {
+      "name": "BadRhino",
+      "domain": "badrhino.com"
+    },
+    {
+      "name": "Banggood",
+      "domain": "banggood.com"
+    },
+    {
+      "name": "Bath & Body Works",
+      "domain": "bathandbodyworks.com"
+    },
+    {
+      "name": "Beautiful J",
+      "domain": "beautifulj.co.il"
+    },
+    {
+      "name": "Belle Lingerie",
+      "domain": "bellelingerie.co.uk"
+    },
+    {
+      "name": "Best Buy",
+      "domain": "bestbuy.com"
+    },
+    {
+      "name": "Best Western",
+      "domain": "bestwestern.com"
+    },
+    {
+      "name": "Best Western UK",
+      "domain": "bestwestern.co.uk"
+    },
+    {
+      "name": "Betili",
+      "domain": "betili.co.il"
+    },
+    {
+      "name": "Bhuka",
+      "domain": "bhuka.co.il"
+    },
+    {
+      "name": "Bissell",
+      "domain": "bissell.com"
+    },
+    {
+      "name": "Bitter",
+      "domain": "bitter.co.il"
+    },
+    {
+      "name": "Black Halo",
+      "domain": "blackhalo.com"
+    },
+    {
+      "name": "Bloomingdale's",
+      "domain": "bloomingdales.com"
+    },
+    {
+      "name": "Booking.com",
+      "domain": "booking.com"
+    },
+    {
+      "name": "Booknet",
+      "domain": "booknet.co.il"
+    },
+    {
+      "name": "Budget Pet World",
+      "domain": "budgetpetworld.com"
+    },
+    {
+      "name": "Carter's OshKosh",
+      "domain": "carters.com"
+    },
+    {
+      "name": "Cathay Pacific",
+      "domain": "cathaypacific.com"
+    },
+    {
+      "name": "CheapTickets",
+      "domain": "cheaptickets.com"
+    },
+    {
+      "name": "Chegg",
+      "domain": "chegg.com"
+    },
+    {
+      "name": "Chic Me",
+      "domain": "chicme.com"
+    },
+    {
+      "name": "Cinema City",
+      "domain": "cinema-city.co.il"
+    },
+    {
+      "name": "citizenM",
+      "domain": "citizenm.com"
+    },
+    {
+      "name": "City Travel",
+      "domain": "city-travel.co.il"
+    },
+    {
+      "name": "Claire's",
+      "domain": "claires.com"
+    },
+    {
+      "name": "כלל ביטוח",
+      "domain": "clal.co.il"
+    },
+    {
+      "name": "Clever",
+      "domain": "clever.co.il"
+    },
+    {
+      "name": "Cole Haan",
+      "domain": "colehaan.com"
+    },
+    {
+      "name": "Cook & Bake",
+      "domain": "cookandbake.co.il"
+    },
+    {
+      "name": "Cotosen",
+      "domain": "cotosen.com"
+    },
+    {
+      "name": "Cult Beauty",
+      "domain": "cultbeauty.com"
+    },
+    {
+      "name": "Cupshe",
+      "domain": "cupshe.com"
+    },
+    {
+      "name": "Currys PartMaster",
+      "domain": "partmaster.co.uk"
+    },
+    {
+      "name": "CWC",
+      "domain": "cwc.co.il"
+    },
+    {
+      "name": "CyberGhost VPN",
+      "domain": "cyberghostvpn.com"
+    },
+    {
+      "name": "Deasy",
+      "domain": "deasy.co.il"
+    },
+    {
+      "name": "Delta",
+      "domain": "delta.co.il"
+    },
+    {
+      "name": "Dio Express",
+      "domain": "dioexpress.co.il"
+    },
+    {
+      "name": "Discover Cars",
+      "domain": "discovercars.com"
+    },
+    {
+      "name": "Disney Store",
+      "domain": "shopdisney.com"
+    },
+    {
+      "name": "דוקטור גב",
+      "domain": "dr-gav.co.il"
+    },
+    {
+      "name": "Dream Machine",
+      "domain": "dreammachine.co.il"
+    },
+    {
+      "name": "Dyn Store",
+      "domain": "dynstore.co.il"
+    },
+    {
+      "name": "EatWith",
+      "domain": "eatwith.com"
+    },
+    {
+      "name": "eBay",
+      "domain": "ebay.com"
+    },
+    {
+      "name": "EconomyBookings",
+      "domain": "economybookings.com"
+    },
+    {
+      "name": "Ecosall",
+      "domain": "ecosall.com"
+    },
+    {
+      "name": "eDreams",
+      "domain": "edreams.com"
+    },
+    {
+      "name": "Electrical Europe",
+      "domain": "electricaleurope.com"
+    },
+    {
+      "name": "Ellesse",
+      "domain": "ellesse.com"
+    },
+    {
+      "name": "English Ways",
+      "domain": "englishways.co.il"
+    },
+    {
+      "name": "Envato",
+      "domain": "envato.com"
+    },
+    {
+      "name": "אשת טורס",
+      "domain": "eshettours.co.il"
+    },
+    {
+      "name": "Eshli",
+      "domain": "eshli.co.il"
+    },
+    {
+      "name": "eSIM Fly",
+      "domain": "esimfly.net"
+    },
+    {
+      "name": "eSIMo",
+      "domain": "esimo.co"
+    },
+    {
+      "name": "Ethiopian Airlines",
+      "domain": "ethiopianairlines.com"
+    },
+    {
+      "name": "Europcar",
+      "domain": "europcar.com"
+    },
+    {
+      "name": "Euro Sport",
+      "domain": "euro-sport.co.il"
+    },
+    {
+      "name": "Eurowings",
+      "domain": "eurowings.com"
+    },
+    {
+      "name": "e-vrit",
+      "domain": "e-vrit.co.il"
+    },
+    {
+      "name": "Expedia",
+      "domain": "expedia.com"
+    },
+    {
+      "name": "Eyeconic",
+      "domain": "eyeconic.com"
+    },
+    {
+      "name": "Farfetch",
+      "domain": "farfetch.com"
+    },
+    {
+      "name": "פתאל",
+      "domain": "fattal.co.il"
+    },
+    {
+      "name": "Fenix Travel Insurance",
+      "domain": "fenixinsurance.co.il"
+    },
+    {
+      "name": "FIB Trade",
+      "domain": "fib-trade.co.il"
+    },
+    {
+      "name": "First Class Watches",
+      "domain": "firstclasswatches.com"
+    },
+    {
+      "name": "Fix",
+      "domain": "fix.co.il"
+    },
+    {
+      "name": "Flight Network",
+      "domain": "flightnetwork.com"
+    },
+    {
+      "name": "Flower Net",
+      "domain": "flowernet.co.il"
+    },
+    {
+      "name": "FOX",
+      "domain": "fox.co.il"
+    },
+    {
+      "name": "FOX Home",
+      "domain": "foxhome.co.il"
+    },
+    {
+      "name": "FragranceX",
+      "domain": "fragrancex.com"
+    },
+    {
+      "name": "Fun",
+      "domain": "fun.co.il"
+    },
+    {
+      "name": "Gade",
+      "domain": "gade.co.il"
+    },
+    {
+      "name": "GetYourGuide",
+      "domain": "getyourguide.com"
+    },
+    {
+      "name": "Go Car Insurance",
+      "domain": "go-insurance.co.il"
+    },
+    {
+      "name": "Go City",
+      "domain": "gocity.com"
+    },
+    {
+      "name": "GoDaddy",
+      "domain": "godaddy.com"
+    },
+    {
+      "name": "GOLF",
+      "domain": "golf-fashion.co.il"
+    },
+    {
+      "name": "GOLF&CO",
+      "domain": "golfand.co.il"
+    },
+    {
+      "name": "GOLF KIDS",
+      "domain": "golf-fashion.co.il"
+    },
+    {
+      "name": "Gotogate",
+      "domain": "gotogate.com"
+    },
+    {
+      "name": "Gulliver",
+      "domain": "gulliver.co.il"
+    },
+    {
+      "name": "Halloween Costumes",
+      "domain": "halloweencostumes.com"
+    },
+    {
+      "name": "Hanes",
+      "domain": "hanes.com"
+    },
+    {
+      "name": "הראל ביטוח",
+      "domain": "harel-group.co.il"
+    },
+    {
+      "name": "יקב היוצר",
+      "domain": "hayotzer-winery.co.il"
+    },
+    {
+      "name": "Herbs-Pro",
+      "domain": "herbspro.com"
+    },
+    {
+      "name": "H.O",
+      "domain": "h-o.co.il"
+    },
+    {
+      "name": "HomEat",
+      "domain": "homeat.co.il"
+    },
+    {
+      "name": "Home Center",
+      "domain": "homecenter.co.il"
+    },
+    {
+      "name": "HomeSet",
+      "domain": "homeset.co.il"
+    },
+    {
+      "name": "Hoodies",
+      "domain": "hoodies.co.il"
+    },
+    {
+      "name": "Hostinger",
+      "domain": "hostinger.com"
+    },
+    {
+      "name": "Hotels.com",
+      "domain": "hotels.com"
+    },
+    {
+      "name": "House of Marley",
+      "domain": "thehouseofmarley.com"
+    },
+    {
+      "name": "Hulyo",
+      "domain": "hulyo.co.il"
+    },
+    {
+      "name": "Iberostar",
+      "domain": "iberostar.com"
+    },
+    {
+      "name": "iCount",
+      "domain": "icount.co.il"
+    },
+    {
+      "name": "IHG Hotels",
+      "domain": "ihg.com"
+    },
+    {
+      "name": "Intima",
+      "domain": "intima.co.il"
+    },
+    {
+      "name": "Intimina",
+      "domain": "intimina.com"
+    },
+    {
+      "name": "i-Optic",
+      "domain": "i-optic.co.il"
+    },
+    {
+      "name": "Israel Gifts",
+      "domain": "israelgifts.com"
+    },
+    {
+      "name": "Isrotel",
+      "domain": "isrotel.co.il"
+    },
+    {
+      "name": "italki",
+      "domain": "italki.com"
+    },
+    {
+      "name": "Ivory",
+      "domain": "ivory.co.il"
+    },
+    {
+      "name": "IWOOT",
+      "domain": "iwantoneofthose.com"
+    },
+    {
+      "name": "Jacobi",
+      "domain": "jacobi.co.il"
+    },
+    {
+      "name": "JFN",
+      "domain": "jfn.co.il"
+    },
+    {
+      "name": "Kaitz",
+      "domain": "kaitz.co.il"
+    },
+    {
+      "name": "Kamedis",
+      "domain": "kamedis.com"
+    },
+    {
+      "name": "Kangaroo Sleep",
+      "domain": "kangaroosleep.co.il"
+    },
+    {
+      "name": "Kaniti",
+      "domain": "kaniti.online"
+    },
+    {
+      "name": "Keter",
+      "domain": "keter.com"
+    },
+    {
+      "name": "Kiko Milano",
+      "domain": "kikocosmetics.com"
+    },
+    {
+      "name": "כיתן",
+      "domain": "kitan.co.il"
+    },
+    {
+      "name": "קרביץ",
+      "domain": "kravitz.co.il"
+    },
+    {
+      "name": "KSP",
+      "domain": "ksp.co.il"
+    },
+    {
+      "name": "קופת בראבו",
+      "domain": "kupatbravo.co.il"
+    },
+    {
+      "name": "Labass",
+      "domain": "labass.co.il"
+    },
+    {
+      "name": "lastminute.com",
+      "domain": "lastminute.com"
+    },
+    {
+      "name": "Last Price",
+      "domain": "lastprice.co.il"
+    },
+    {
+      "name": "Lavido",
+      "domain": "lavido.com"
+    },
+    {
+      "name": "Lee Jeans",
+      "domain": "lee.com"
+    },
+    {
+      "name": "Leo Jewelry",
+      "domain": "leo-jewelry.co.il"
+    },
+    {
+      "name": "Liberty London",
+      "domain": "libertylondon.com"
+    },
+    {
+      "name": "Libra",
+      "domain": "libra.co.il"
+    },
+    {
+      "name": "LightInTheBox",
+      "domain": "lightinthebox.com"
+    },
+    {
+      "name": "Lion King",
+      "domain": "lionking.co.il"
+    },
+    {
+      "name": "Lior",
+      "domain": "lior.co.il"
+    },
+    {
+      "name": "Living DNA",
+      "domain": "livingdna.com"
+    },
+    {
+      "name": "Loaded",
+      "domain": "loaded.co.il"
+    },
+    {
+      "name": "Lookfantastic",
+      "domain": "lookfantastic.com"
+    },
+    {
+      "name": "LOT Polish Airlines",
+      "domain": "lot.com"
+    },
+    {
+      "name": "Lucky2Go",
+      "domain": "lucky2go.com"
+    },
+    {
+      "name": "Macy's",
+      "domain": "macys.com"
+    },
+    {
+      "name": "Mania Jeans",
+      "domain": "maniajeans.co.il"
+    },
+    {
+      "name": "MDS Pharm",
+      "domain": "mdspharm.co.il"
+    },
+    {
+      "name": "Me-Book",
+      "domain": "me-book.co.il"
+    },
+    {
+      "name": "מנורה מבטחים",
+      "domain": "menoramivt.co.il"
+    },
+    {
+      "name": "מסיבה לנד",
+      "domain": "mesibalend.co.il"
+    },
+    {
+      "name": "מגדל ביטוח",
+      "domain": "migdal.co.il"
+    },
+    {
+      "name": "מגדל דירה אונליין",
+      "domain": "migdal.co.il"
+    },
+    {
+      "name": "מגדל רכב אונליין",
+      "domain": "migdal.co.il"
+    },
+    {
+      "name": "מגדל משכנתא",
+      "domain": "migdal.co.il"
+    },
+    {
+      "name": "Milega",
+      "domain": "milega.co.il"
+    },
+    {
+      "name": "Millennium Hotels",
+      "domain": "millenniumhotels.com"
+    },
+    {
+      "name": "Minor Hotels",
+      "domain": "minorhotels.com"
+    },
+    {
+      "name": "מירי לב",
+      "domain": "mirilev.co.il"
+    },
+    {
+      "name": "Mishloha",
+      "domain": "mishloha.co.il"
+    },
+    {
+      "name": "Modelones",
+      "domain": "modelones.com"
+    },
+    {
+      "name": "Modibodi",
+      "domain": "modibodi.com"
+    },
+    {
+      "name": "Modlily",
+      "domain": "modlily.com"
+    },
+    {
+      "name": "Mommy Care",
+      "domain": "mommycare.co.il"
+    },
+    {
+      "name": "monday.com",
+      "domain": "monday.com"
+    },
+    {
+      "name": "Marks & Spencer",
+      "domain": "marksandspencer.com"
+    },
+    {
+      "name": "Multistore",
+      "domain": "multistore.co.il"
+    },
+    {
+      "name": "My 1st Years",
+      "domain": "my1styears.com"
+    },
+    {
+      "name": "MyHeritage",
+      "domain": "myheritage.com"
+    },
+    {
+      "name": "נעמן",
+      "domain": "naaman.co.il"
+    },
+    {
+      "name": "Namecheap",
+      "domain": "namecheap.com"
+    },
+    {
+      "name": "Napo",
+      "domain": "napo.pet"
+    },
+    {
+      "name": "Naturalizer",
+      "domain": "naturalizer.com"
+    },
+    {
+      "name": "Nautica",
+      "domain": "nautica.com"
+    },
+    {
+      "name": "NBA Store",
+      "domain": "nba.com"
+    },
+    {
+      "name": "Neal's Yard",
+      "domain": "nealsyardremedies.com"
+    },
+    {
+      "name": "NET-A-PORTER",
+      "domain": "net-a-porter.com"
+    },
+    {
+      "name": "נטו אנד נטו",
+      "domain": "netoneto.co.il"
+    },
+    {
+      "name": "Newegg",
+      "domain": "newegg.com"
+    },
+    {
+      "name": "New Era",
+      "domain": "neweracap.com"
+    },
+    {
+      "name": "New Feet",
+      "domain": "newfeet.co.il"
+    },
+    {
+      "name": "NHW",
+      "domain": "nhw.co.il"
+    },
+    {
+      "name": "Noa Kirel Store",
+      "domain": "noakirel.co.il"
+    },
+    {
+      "name": "Noizz",
+      "domain": "noizz.co.il"
+    },
+    {
+      "name": "Novakid",
+      "domain": "novakid.com"
+    },
+    {
+      "name": "Ofran",
+      "domain": "ofran.co.il"
+    },
+    {
+      "name": "Olier Paris",
+      "domain": "oliereparis.com"
+    },
+    {
+      "name": "OneTravel",
+      "domain": "onetravel.com"
+    },
+    {
+      "name": "Opticana",
+      "domain": "opticana.co.il"
+    },
+    {
+      "name": "Orbitz",
+      "domain": "orbitz.com"
+    },
+    {
+      "name": "Otticanet",
+      "domain": "otticanet.com"
+    },
+    {
+      "name": "Owl Market",
+      "domain": "owlmarket.co.il"
+    },
+    {
+      "name": "PandaHall",
+      "domain": "pandahall.com"
+    },
+    {
+      "name": "Panda",
+      "domain": "pandazzz.co.il"
+    },
+    {
+      "name": "Paneco",
+      "domain": "paneco.co.il"
+    },
+    {
+      "name": "Panta Rei",
+      "domain": "pantarei.co.il"
+    },
+    {
+      "name": "Partner",
+      "domain": "partner.co.il"
+    },
+    {
+      "name": "PassportCard",
+      "domain": "passportcard.co.il"
+    },
+    {
+      "name": "PatPat",
+      "domain": "patpat.com"
+    },
+    {
+      "name": "Payoneer",
+      "domain": "payoneer.com"
+    },
+    {
+      "name": "Perfume",
+      "domain": "perfume.co.il"
+    },
+    {
+      "name": "Pet Care Club",
+      "domain": "petcareclub.com"
+    },
+    {
+      "name": "Pet Care Supplies",
+      "domain": "petcaresupplies.com"
+    },
+    {
+      "name": "Pharmacy2U",
+      "domain": "pharmacy2u.co.uk"
+    },
+    {
+      "name": "Plant It",
+      "domain": "plantit.co.il"
+    },
+    {
+      "name": "Platin Express",
+      "domain": "platinexpress.co.il"
+    },
+    {
+      "name": "Polgat",
+      "domain": "polgat.co.il"
+    },
+    {
+      "name": "PrettyLittleThing",
+      "domain": "prettylittlething.com"
+    },
+    {
+      "name": "Priceline",
+      "domain": "priceline.com"
+    },
+    {
+      "name": "Public Desire",
+      "domain": "publicdesire.com"
+    },
+    {
+      "name": "Radisson Hotels",
+      "domain": "radissonhotels.com"
+    },
+    {
+      "name": "Rahiti",
+      "domain": "rahiti.co.il"
+    },
+    {
+      "name": "Razili",
+      "domain": "razili.co.il"
+    },
+    {
+      "name": "Redefine Hair",
+      "domain": "redefine-hair.co.il"
+    },
+    {
+      "name": "RedMagic",
+      "domain": "redmagic.gg"
+    },
+    {
+      "name": "RentCarLA",
+      "domain": "rentcarla.com"
+    },
+    {
+      "name": "Renuar",
+      "domain": "renuar.co.il"
+    },
+    {
+      "name": "Replay",
+      "domain": "replay.it"
+    },
+    {
+      "name": "Reserved",
+      "domain": "reserved.com"
+    },
+    {
+      "name": "R Gallery",
+      "domain": "rgallery.co.il"
+    },
+    {
+      "name": "Rosewe",
+      "domain": "rosewe.com"
+    },
+    {
+      "name": "Rozenfeld",
+      "domain": "rozenfeld.co.il"
+    },
+    {
+      "name": "Sabon",
+      "domain": "sabon.co.il"
+    },
+    {
+      "name": "Savile Row Company",
+      "domain": "savilerowco.com"
+    },
+    {
+      "name": "Sephora",
+      "domain": "sephora.com"
+    },
+    {
+      "name": "שילב",
+      "domain": "shilav.co.il"
+    },
+    {
+      "name": "Shoes Online",
+      "domain": "shoesonline.co.il"
+    },
+    {
+      "name": "שמרת הזורע",
+      "domain": "shomrat.co.il"
+    },
+    {
+      "name": "Shopbop",
+      "domain": "shopbop.com"
+    },
+    {
+      "name": "Sibel Food",
+      "domain": "sibelfood.co.il"
+    },
+    {
+      "name": "Simplii Good",
+      "domain": "simpliigood.com"
+    },
+    {
+      "name": "Size",
+      "domain": "size.co.uk"
+    },
+    {
+      "name": "SmartBuyGlasses",
+      "domain": "smartbuyglasses.com"
+    },
+    {
+      "name": "SockShop",
+      "domain": "sockshop.co.uk"
+    },
+    {
+      "name": "Soho",
+      "domain": "soho.co.il"
+    },
+    {
+      "name": "Soltam",
+      "domain": "soltam.co.il"
+    },
+    {
+      "name": "Sports Events 365",
+      "domain": "sportsevents365.com"
+    },
+    {
+      "name": "Start Home",
+      "domain": "starthome.co.il"
+    },
+    {
+      "name": "Steimatzky",
+      "domain": "steimatzky.co.il"
+    },
+    {
+      "name": "Steve Madden",
+      "domain": "stevemadden.com"
+    },
+    {
+      "name": "StockX",
+      "domain": "stockx.com"
+    },
+    {
+      "name": "StrawberryNET",
+      "domain": "strawberrynet.com"
+    },
+    {
+      "name": "Strongful",
+      "domain": "strongful.co.il"
+    },
+    {
+      "name": "StubHub",
+      "domain": "stubhub.com"
+    },
+    {
+      "name": "Superdry",
+      "domain": "superdry.com"
+    },
+    {
+      "name": "Super-Pharm",
+      "domain": "super-pharm.co.il"
+    },
+    {
+      "name": "Tami4",
+      "domain": "tami4.co.il"
+    },
+    {
+      "name": "Temu",
+      "domain": "temu.com"
+    },
+    {
+      "name": "Terminal X",
+      "domain": "terminalx.com"
+    },
+    {
+      "name": "TFNC London",
+      "domain": "tfnclondon.com"
+    },
+    {
+      "name": "Tiber",
+      "domain": "tiber.co.il"
+    },
+    {
+      "name": "Ticketmaster",
+      "domain": "ticketmaster.com"
+    },
+    {
+      "name": "TicketNetwork",
+      "domain": "ticketnetwork.com"
+    },
+    {
+      "name": "Timberland",
+      "domain": "timberland.com"
+    },
+    {
+      "name": "Tollman's",
+      "domain": "tollmansdot.co.il"
+    },
+    {
+      "name": "TopCommerce",
+      "domain": "topcommerce.co.il"
+    },
+    {
+      "name": "Touch Therapy",
+      "domain": "touchtherapy.co.il"
+    },
+    {
+      "name": "Toys R Us",
+      "domain": "toysrus.co.il"
+    },
+    {
+      "name": "Traklin",
+      "domain": "traklin.co.il"
+    },
+    {
+      "name": "Travelocity",
+      "domain": "travelocity.com"
+    },
+    {
+      "name": "Trip Guaranty",
+      "domain": "tripguaranty.co.il"
+    },
+    {
+      "name": "True Story",
+      "domain": "truestory.co.il"
+    },
+    {
+      "name": "Tulip Winery",
+      "domain": "tulip-winery.co.il"
+    },
+    {
+      "name": "TwentyFourSeven",
+      "domain": "24-7.co.il"
+    },
+    {
+      "name": "Twinings Teashop",
+      "domain": "twinings.co.uk"
+    },
+    {
+      "name": "Ulike",
+      "domain": "ulike.com"
+    },
+    {
+      "name": "Unineed",
+      "domain": "unineed.com"
+    },
+    {
+      "name": "Urban",
+      "domain": "urban.co.il"
+    },
+    {
+      "name": "Urbanica",
+      "domain": "urbanica.co.il"
+    },
+    {
+      "name": "Vardinon",
+      "domain": "vardinon.co.il"
+    },
+    {
+      "name": "VeePN",
+      "domain": "veepn.com"
+    },
+    {
+      "name": "viagogo",
+      "domain": "viagogo.com"
+    },
+    {
+      "name": "Viator",
+      "domain": "viator.com"
+    },
+    {
+      "name": "Victoria's Secret",
+      "domain": "victoriassecret.com"
+    },
+    {
+      "name": "Vision Direct",
+      "domain": "visiondirect.co.uk"
+    },
+    {
+      "name": "VIVAIA",
+      "domain": "vivaia.com"
+    },
+    {
+      "name": "Voye Global",
+      "domain": "voyeglobal.com"
+    },
+    {
+      "name": "Vrbo",
+      "domain": "vrbo.com"
+    },
+    {
+      "name": "Wal-G",
+      "domain": "wal-g.co.il"
+    },
+    {
+      "name": "Walla Tours",
+      "domain": "tours.walla.co.il"
+    },
+    {
+      "name": "WeShoes",
+      "domain": "weshoes.co.il"
+    },
+    {
+      "name": "Wondershare",
+      "domain": "wondershare.com"
+    },
+    {
+      "name": "Woot",
+      "domain": "woot.com"
+    },
+    {
+      "name": "Wrangler",
+      "domain": "wrangler.com"
+    },
+    {
+      "name": "Zer4u",
+      "domain": "zer4u.co.il"
+    },
+    {
+      "name": "Zolpo",
+      "domain": "zolpo.co.il"
+    }
+  ]
+}

@@ -13,6 +13,13 @@ export function formatMoney(amount: number): string {
   return `\u2066${ils.format(amount ?? 0)} \u20AA\u2069`;
 }
 
+/** האם לחנות יש מעקב שותפים אמיתי (ולכן שיעור קאשבק אמיתי, לא משוער). */
+export function isStoreTrackable(store: {
+  affiliate_url_template?: string | null;
+}): boolean {
+  return Boolean(store.affiliate_url_template);
+}
+
 /** תיאור קריא של תנאי הקאשבק בחנות (שיעור העמלה הגולמי). */
 export function formatCashbackLabel(type: CashbackType, value: number): string {
   if (type === "percent") return `${value}% קאשבק`;

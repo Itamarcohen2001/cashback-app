@@ -20,6 +20,7 @@ import {
   brandLogoCandidates,
   formatDate,
   formatUserCashback,
+  isStoreTrackable,
 } from "@/lib/format";
 import { Coupon, Store } from "@/lib/types";
 import { colors, font, gradients, radius, rtl, shadow, spacing } from "@/theme";
@@ -167,12 +168,22 @@ export function StoreTile({
       <Text style={styles.storeTileName} numberOfLines={1}>
         {store.name}
       </Text>
-      <View style={styles.storeTilePill}>
-        <Text style={styles.storeTilePillText}>
-          {formatUserCashback(store)}
-        </Text>
-      </View>
+      <CashbackPill store={store} />
     </Pressable>
+  );
+}
+
+/** תגית קאשבק: אחוז אמיתי לחנות מחוברת, או "בקרוב" לחנות ללא מעקב שותפים. */
+export function CashbackPill({ store }: { store: Store }) {
+  const trackable = isStoreTrackable(store);
+  return (
+    <View style={[styles.storeTilePill, !trackable && styles.pillSoon]}>
+      <Text
+        style={[styles.storeTilePillText, !trackable && styles.pillSoonText]}
+      >
+        {trackable ? formatUserCashback(store) : "בקרוב"}
+      </Text>
+    </View>
   );
 }
 
@@ -781,6 +792,8 @@ const styles = StyleSheet.create({
     fontWeight: "900",
     fontSize: font.sm,
   },
+  pillSoon: { backgroundColor: colors.border },
+  pillSoonText: { color: colors.textMuted },
   skeleton: { backgroundColor: colors.border },
   skeletonGrid: {
     flexDirection: rtl.row,

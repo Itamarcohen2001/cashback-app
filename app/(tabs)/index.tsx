@@ -25,6 +25,7 @@ import { formatUserCashback } from "@/lib/format";
 import { getRecentStoreIds } from "@/lib/recent";
 import { Coupon, Store } from "@/lib/types";
 import {
+  CashbackPill,
   CouponCard,
   EmptyState,
   GradientCard,
@@ -293,11 +294,7 @@ export default function StoresScreen() {
                       <Text style={styles.featuredName} numberOfLines={1}>
                         {s.name}
                       </Text>
-                      <View style={styles.cashPill}>
-                        <Text style={styles.cashPillText}>
-                          {formatUserCashback(s)}
-                        </Text>
-                      </View>
+                      <CashbackPill store={s} />
                     </Pressable>
                   ))}
                 </ScrollView>
@@ -395,11 +392,7 @@ export default function StoresScreen() {
             <Text style={styles.gridName} numberOfLines={1}>
               {item.name}
             </Text>
-            <View style={styles.cashPill}>
-              <Text style={styles.cashPillText}>
-                {formatUserCashback(item)}
-              </Text>
-            </View>
+            <CashbackPill store={item} />
           </Pressable>
         )}
       />

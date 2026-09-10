@@ -19,7 +19,7 @@ import {
   fetchStore,
   simulatePurchase,
 } from "@/lib/cashback";
-import { formatMoney, formatUserCashback } from "@/lib/format";
+import { formatMoney, formatUserCashback, isStoreTrackable } from "@/lib/format";
 import { addRecentStore } from "@/lib/recent";
 import { isFavorite, toggleFavorite } from "@/lib/favorites";
 import { Coupon, Store } from "@/lib/types";
@@ -151,10 +151,14 @@ export default function StoreScreen() {
           ) : null}
           <View style={styles.cashbackPill}>
             <Text style={styles.cashbackPillText}>
-              {formatUserCashback(store)}
+              {isStoreTrackable(store) ? formatUserCashback(store) : "בקרוב"}
             </Text>
           </View>
-          <Text style={styles.cashbackHint}>הקאשבק שלכם על כל רכישה</Text>
+          <Text style={styles.cashbackHint}>
+            {isStoreTrackable(store)
+              ? "הקאשבק שלכם על כל רכישה"
+              : "קאשבק לחנות זו יתווסף בקרוב"}
+          </Text>
         </GradientCard>
 
         {store.description ? (
@@ -173,7 +177,11 @@ export default function StoreScreen() {
         </Card>
 
         <Button
-          label="הפעלת קאשבק ומעבר לחנות"
+          label={
+            isStoreTrackable(store)
+              ? "הפעלת קאשבק ומעבר לחנות"
+              : "מעבר לחנות"
+          }
           onPress={onActivate}
           loading={activating}
         />
