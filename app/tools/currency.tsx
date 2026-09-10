@@ -208,7 +208,12 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.border,
   },
-  currencyRow: { gap: spacing.sm, paddingVertical: 2, paddingHorizontal: 2 },
+  currencyRow: {
+    flexDirection: rtl.row,
+    gap: spacing.sm,
+    paddingVertical: 2,
+    paddingHorizontal: 2,
+  },
   chip: {
     flexDirection: rtl.row,
     alignItems: "center",

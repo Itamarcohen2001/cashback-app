@@ -78,8 +78,8 @@ const LOGO_OVERRIDES: Record<string, string> = {
 
 /**
  * מחזיר רשימת מקורות ללוגו המותג, לניסיון לפי סדר.
- * סדר: override ידני -> logo_url מה-DB -> icon.horse (רזולוציה גבוהה) -> Google -> DuckDuckGo.
- * (Clearbit נסגר ב-2023.)
+ * סדר: override ידני -> logo_url מה-DB -> icon.horse (רזולוציה גבוהה) ->
+ * Google 256 -> unavatar (אגרגטור) -> DuckDuckGo. (Clearbit נסגר ב-2023.)
  */
 export function brandLogoCandidates(store: {
   logo_url: string | null;
@@ -94,9 +94,12 @@ export function brandLogoCandidates(store: {
     out.push(store.logo_url);
   }
   if (domain) {
-    // Google favicons מחזיר אייקון קטן ונקי (בלי תגי אזור/טקסט שיכולים להופיע ב-icon.horse).
-    out.push(`https://www.google.com/s2/favicons?sz=128&domain=${domain}`);
+    // icon.horse מחזיר apple-touch-icon ברזולוציה גבוהה (180px+) — הכי חד לרוב המותגים.
     out.push(`https://icon.horse/icon/${domain}`);
+    // Google favicons ברזולוציה גבוהה (256) — גיבוי נקי ומהיר.
+    out.push(`https://www.google.com/s2/favicons?sz=256&domain=${domain}`);
+    // unavatar מאחד מספר מקורות ולעיתים מחזיר את הלוגו האיכותי ביותר.
+    out.push(`https://unavatar.io/${domain}?fallback=false`);
     out.push(`https://icons.duckduckgo.com/ip3/${domain}.ico`);
   }
   return out;

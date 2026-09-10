@@ -238,11 +238,7 @@ export default function WalletScreen() {
 
             <Text style={styles.sectionTitle}>היסטוריית קאשבק</Text>
             {txns.length > 0 ? (
-              <ScrollView
-                horizontal
-                showsHorizontalScrollIndicator={false}
-                contentContainerStyle={styles.chipsRow}
-              >
+              <View style={styles.chipsRow}>
                 {FILTERS.map((f) => {
                   const active = filter === f.key;
                   return (
@@ -262,7 +258,7 @@ export default function WalletScreen() {
                     </Pressable>
                   );
                 })}
-              </ScrollView>
+              </View>
             ) : null}
             {error ? <Text style={styles.error}>{error}</Text> : null}
           </View>
@@ -399,6 +395,7 @@ const styles = StyleSheet.create({
   error: { color: colors.danger, textAlign: "right" },
   chipsRow: {
     flexDirection: rtl.row,
+    flexWrap: "wrap",
     gap: spacing.sm,
     paddingVertical: spacing.xs,
   },

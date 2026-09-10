@@ -179,7 +179,12 @@ const styles = StyleSheet.create({
     color: colors.text,
     textAlign: "right",
   },
-  storeRow: { gap: spacing.sm, paddingVertical: 2, paddingHorizontal: 2 },
+  storeRow: {
+    flexDirection: rtl.row,
+    gap: spacing.sm,
+    paddingVertical: 2,
+    paddingHorizontal: 2,
+  },
   searchBar: {
     flexDirection: rtl.row,
     alignItems: "center",

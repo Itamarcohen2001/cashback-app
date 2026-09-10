@@ -316,11 +316,7 @@ export default function StoresScreen() {
               ) : null}
             </View>
 
-            <ScrollView
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              contentContainerStyle={styles.chipsRow}
-            >
+            <View style={styles.chipsRow}>
               <Chip
                 label="❤ מועדפים"
                 active={onlyFavorites}
@@ -341,7 +337,7 @@ export default function StoresScreen() {
                 active={sort === "name"}
                 onPress={() => setSort("name")}
               />
-            </ScrollView>
+            </View>
 
             <Text style={styles.sectionTitle}>
               {onlyFavorites ? "המועדפים שלי" : (category ?? "כל החנויות")} (
@@ -508,7 +504,12 @@ const styles = StyleSheet.create({
     color: colors.text,
     textAlign: "center",
   },
-  toolsRow: { gap: spacing.md, paddingVertical: 2, paddingHorizontal: 2 },
+  toolsRow: {
+    flexDirection: rtl.row,
+    gap: spacing.md,
+    paddingVertical: 2,
+    paddingHorizontal: 2,
+  },
   toolTile: {
     width: 104,
     alignItems: "center",
@@ -587,8 +588,18 @@ const styles = StyleSheet.create({
     color: colors.text,
     textAlign: "right",
   },
-  featuredRow: { gap: spacing.md, paddingVertical: 2, paddingHorizontal: 2 },
-  catRow: { gap: spacing.md, paddingVertical: 2, paddingHorizontal: 2 },
+  featuredRow: {
+    flexDirection: rtl.row,
+    gap: spacing.md,
+    paddingVertical: 2,
+    paddingHorizontal: 2,
+  },
+  catRow: {
+    flexDirection: rtl.row,
+    gap: spacing.md,
+    paddingVertical: 2,
+    paddingHorizontal: 2,
+  },
   catTile: { width: 72, alignItems: "center", gap: spacing.xs },
   catIcon: {
     width: 60,
@@ -603,7 +614,12 @@ const styles = StyleSheet.create({
     color: colors.textMuted,
     textAlign: "center",
   },
-  dealsRow: { gap: spacing.md, paddingVertical: 2, paddingHorizontal: 2 },
+  dealsRow: {
+    flexDirection: rtl.row,
+    gap: spacing.md,
+    paddingVertical: 2,
+    paddingHorizontal: 2,
+  },
   dealCardWrap: { width: 300 },
   featuredCard: {
     width: 120,
@@ -636,7 +652,13 @@ const styles = StyleSheet.create({
     color: colors.text,
     textAlign: "right",
   },
-  chipsRow: { gap: spacing.md, paddingVertical: 2, paddingHorizontal: 2 },
+  chipsRow: {
+    flexDirection: rtl.row,
+    flexWrap: "wrap",
+    gap: spacing.md,
+    paddingVertical: 2,
+    paddingHorizontal: 2,
+  },
   chip: {
     backgroundColor: colors.card,
     borderRadius: radius.pill,
