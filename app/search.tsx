@@ -17,7 +17,7 @@ import {
   toggleFavorite,
 } from "@/lib/favorites";
 import { Store } from "@/lib/types";
-import { ScreenHeader, StoreTile } from "@/ui";
+import { ScreenHeader, StoreTile, EmptyState } from "@/ui";
 import { colors, font, radius, rtl, shadow, spacing } from "@/theme";
 
 const POPULAR = [
@@ -121,7 +121,11 @@ export default function SearchScreen() {
         }
         ListEmptyComponent={
           q ? (
-            <Text style={styles.empty}>לא נמצאו חנויות עבור "{query}".</Text>
+            <EmptyState
+              icon="search-outline"
+              title={`לא נמצאו תוצאות לעבור "${query}"`}
+              subtitle="נסו שם חנות או קטגוריה אחרת."
+            />
           ) : null
         }
         renderItem={({ item }) => (

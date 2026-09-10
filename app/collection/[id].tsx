@@ -16,7 +16,7 @@ import {
 } from "@/lib/favorites";
 import { collectionById } from "@/lib/sections";
 import { Store } from "@/lib/types";
-import { ScreenHeader, StoreTile } from "@/ui";
+import { ScreenHeader, StoreGridSkeleton, StoreTile, EmptyState } from "@/ui";
 import { colors, font, spacing } from "@/theme";
 
 export default function CollectionScreen() {
@@ -60,7 +60,7 @@ export default function CollectionScreen() {
         ListHeaderComponent={
           <View style={{ marginBottom: spacing.lg }}>
             <ScreenHeader
-              title={collection?.title ?? "אוסף"}
+              title={collection?.title ?? "קולקציה"}
               subtitle={
                 collection
                   ? `${filtered.length} חנויות · ${collection.subtitle}`
@@ -71,12 +71,13 @@ export default function CollectionScreen() {
         }
         ListEmptyComponent={
           loading ? (
-            <ActivityIndicator
-              color={colors.primary}
-              style={{ marginTop: spacing.xxl }}
-            />
+            <StoreGridSkeleton />
           ) : (
-            <Text style={styles.empty}>אין חנויות באוסף הזה עדיין.</Text>
+            <EmptyState
+              icon="albums-outline"
+              title="אין חנויות בקולקציה הזו"
+              subtitle="נסו קולקציה אחרת."
+            />
           )
         }
         renderItem={({ item }) => (

@@ -14,7 +14,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { fetchCoupons } from "@/lib/cashback";
 import { Coupon } from "@/lib/types";
-import { CouponCard } from "@/ui";
+import { CouponCard, EmptyState, Skeleton } from "@/ui";
 import { colors, font, radius, shadow, spacing } from "@/theme";
 
 export default function DealsScreen() {
@@ -103,14 +103,17 @@ export default function DealsScreen() {
         }
         ListEmptyComponent={
           loading ? (
-            <ActivityIndicator
-              color={colors.primary}
-              style={{ marginTop: spacing.xxl }}
-            />
+            <View style={{ gap: spacing.md }}>
+              <Skeleton height={120} radius={radius.lg} />
+              <Skeleton height={120} radius={radius.lg} />
+              <Skeleton height={120} radius={radius.lg} />
+            </View>
           ) : (
-            <Text style={styles.empty}>
-              {error ?? "אין דילים זמינים כרגע."}
-            </Text>
+            <EmptyState
+              icon="pricetags-outline"
+              title={error ? "בעיה בטעינת הדילים" : "אין דילים כרגע"}
+              subtitle={error ?? "חזרו בקרוב — אנחנו מעדכנים דילים כל הזמן."}
+            />
           )
         }
         renderItem={({ item }) => (

@@ -27,7 +27,7 @@ function AuthGate() {
     }
   }, [user, loading, segments]);
 
-  return <Stack screenOptions={{ headerShown: false }} />;
+  return <Stack screenOptions={{ headerShown: false, animation: "fade" }} />;
 }
 
 export default function RootLayout() {

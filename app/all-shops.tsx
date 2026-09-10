@@ -19,7 +19,7 @@ import {
 } from "@/lib/favorites";
 import { isIsraeliStore } from "@/lib/sections";
 import { Store } from "@/lib/types";
-import { ScreenHeader, StoreTile } from "@/ui";
+import { ScreenHeader, StoreGridSkeleton, StoreTile, EmptyState } from "@/ui";
 import { colors, font, radius, rtl, shadow, spacing } from "@/theme";
 
 export default function AllShopsScreen() {
@@ -106,12 +106,13 @@ export default function AllShopsScreen() {
         }
         ListEmptyComponent={
           loading ? (
-            <ActivityIndicator
-              color={colors.primary}
-              style={{ marginTop: spacing.xxl }}
-            />
+            <StoreGridSkeleton />
           ) : (
-            <Text style={styles.empty}>לא נמצאו חנויות.</Text>
+            <EmptyState
+              icon="search-outline"
+              title="לא נמצאו חנויות"
+              subtitle="נסו מילת חיפוש אחרת."
+            />
           )
         }
         renderItem={({ item }) => (

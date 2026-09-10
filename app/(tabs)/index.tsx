@@ -24,7 +24,14 @@ import {
 import { formatUserCashback } from "@/lib/format";
 import { getRecentStoreIds } from "@/lib/recent";
 import { Coupon, Store } from "@/lib/types";
-import { CouponCard, GradientCard, HeartButton, StoreLogo } from "@/ui";
+import {
+  CouponCard,
+  EmptyState,
+  GradientCard,
+  HeartButton,
+  StoreGridSkeleton,
+  StoreLogo,
+} from "@/ui";
 import { colors, font, gradients, radius, rtl, shadow, spacing } from "@/theme";
 
 type SortMode = "popular" | "cashback" | "name";
@@ -347,17 +354,25 @@ export default function StoresScreen() {
         }
         ListEmptyComponent={
           loading ? (
-            <ActivityIndicator
-              color={colors.primary}
-              style={{ marginTop: spacing.xxl }}
+            <StoreGridSkeleton />
+          ) : error ? (
+            <EmptyState
+              icon="cloud-offline-outline"
+              title="בעיה בטעינת החנויות"
+              subtitle={error}
+            />
+          ) : stores.length ? (
+            <EmptyState
+              icon="search-outline"
+              title="לא נמצאו חנויות"
+              subtitle="נסו לחפש במילים אחרים או לנקות את הסינון."
             />
           ) : (
-            <Text style={styles.empty}>
-              {error ??
-                (stores.length
-                  ? "לא נמצאו חנויות התואמות לחיפוש."
-                  : "אין חנויות זמינות עדיין.")}
-            </Text>
+            <EmptyState
+              icon="storefront-outline"
+              title="אין חנויות עדיין"
+              subtitle="חזרו מאוחר יותר — אנחנו מוסיפים חנויות כל הזמן."
+            />
           )
         }
         renderItem={({ item }) => (

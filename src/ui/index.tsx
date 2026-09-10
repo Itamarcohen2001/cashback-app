@@ -1,6 +1,7 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   ActivityIndicator,
+  Animated,
   Image,
   Pressable,
   StyleProp,
@@ -18,6 +19,85 @@ import { LinearGradient } from "expo-linear-gradient";
 import { brandLogoCandidates, formatUserCashback } from "@/lib/format";
 import { Coupon, Store } from "@/lib/types";
 import { colors, font, gradients, radius, rtl, shadow, spacing } from "@/theme";
+
+/** שלד טעינה פועם (Skeleton) — לתצוגת placeholder בזמן שליפת נתונים. */
+export function Skeleton({
+  width,
+  height,
+  radius: r = radius.md,
+  style,
+}: {
+  width?: number | `${number}%`;
+  height: number;
+  radius?: number;
+  style?: StyleProp<ViewStyle>;
+}) {
+  const opacity = useRef(new Animated.Value(0.5)).current;
+  useEffect(() => {
+    const loop = Animated.loop(
+      Animated.sequence([
+        Animated.timing(opacity, {
+          toValue: 1,
+          duration: 700,
+          useNativeDriver: true,
+        }),
+        Animated.timing(opacity, {
+          toValue: 0.5,
+          duration: 700,
+          useNativeDriver: true,
+        }),
+      ]),
+    );
+    loop.start();
+    return () => loop.stop();
+  }, [opacity]);
+  return (
+    <Animated.View
+      style={[
+        { width: width ?? "100%", height, borderRadius: r, opacity },
+        styles.skeleton,
+        style,
+      ]}
+    />
+  );
+}
+
+/** שלד לרשת חנויות (3 בשורה) — תצוגת טעינה. */
+export function StoreGridSkeleton({ count = 9 }: { count?: number }) {
+  return (
+    <View style={styles.skeletonGrid}>
+      {Array.from({ length: count }).map((_, i) => (
+        <View key={i} style={styles.skeletonTile}>
+          <Skeleton width={72} height={72} radius={18} />
+          <Skeleton width={60} height={12} />
+          <Skeleton width={72} height={22} radius={radius.pill} />
+        </View>
+      ))}
+    </View>
+  );
+}
+
+/** מצב ריק מעוצב — אייקון + כותרת + טקסט משנה. */
+export function EmptyState({
+  icon,
+  title,
+  subtitle,
+}: {
+  icon: React.ComponentProps<typeof Ionicons>["name"];
+  title: string;
+  subtitle?: string;
+}) {
+  return (
+    <View style={styles.emptyState}>
+      <View style={styles.emptyIcon}>
+        <Ionicons name={icon} size={34} color={colors.primary} />
+      </View>
+      <Text style={styles.emptyTitle}>{title}</Text>
+      {subtitle ? <Text style={styles.emptySubtitle}>{subtitle}</Text> : null}
+    </View>
+  );
+}
+
 /** כותרת מסך עם כפתור חזרה — עקבי לכל המסכים הפנימיים. */
 export function ScreenHeader({
   title,
@@ -648,5 +728,49 @@ const styles = StyleSheet.create({
     color: colors.accentDark,
     fontWeight: "900",
     fontSize: font.sm,
+  },
+  skeleton: { backgroundColor: colors.border },
+  skeletonGrid: {
+    flexDirection: rtl.row,
+    flexWrap: "wrap",
+    gap: spacing.md,
+  },
+  skeletonTile: {
+    width: "31.5%",
+    alignItems: "center",
+    gap: spacing.sm,
+    backgroundColor: colors.card,
+    borderRadius: radius.lg,
+    paddingVertical: spacing.lg,
+    paddingHorizontal: spacing.sm,
+    borderWidth: 1,
+    borderColor: colors.border,
+  },
+  emptyState: {
+    alignItems: "center",
+    gap: spacing.sm,
+    paddingVertical: spacing.xxl,
+    paddingHorizontal: spacing.lg,
+  },
+  emptyIcon: {
+    width: 72,
+    height: 72,
+    borderRadius: radius.pill,
+    backgroundColor: colors.primaryLight,
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: spacing.xs,
+  },
+  emptyTitle: {
+    fontSize: font.lg,
+    fontWeight: "800",
+    color: colors.text,
+    textAlign: "center",
+  },
+  emptySubtitle: {
+    fontSize: font.md,
+    color: colors.textMuted,
+    textAlign: "center",
+    lineHeight: 22,
   },
 });
