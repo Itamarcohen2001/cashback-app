@@ -88,7 +88,10 @@ export const colors = Object.fromEntries(
 export function buildThemeCss(): string {
   const toVars = (p: Record<string, string>) =>
     (Object.keys(p) as PaletteKey[]).map((k) => `--c-${k}:${p[k]};`).join("");
-  return `:root{${toVars(lightPalette)}}\n:root[data-theme="dark"]{${toVars(darkPalette)}}`;
+  // איפוס מסגרת המיקוד (outline) של הדפדפן בכל שדות הקלט — חוויית חיפוש נקייה.
+  const focusReset =
+    'input:focus,input:focus-visible,textarea:focus,textarea:focus-visible,[contenteditable]:focus{outline:none!important;box-shadow:none!important;}';
+  return `${focusReset}\n:root{${toVars(lightPalette)}}\n:root[data-theme="dark"]{${toVars(darkPalette)}}`;
 }
 
 /** גרדיאנטים לרכיבים בולטים (כרטיס ארנק, כפתור ראשי וכו'). */
