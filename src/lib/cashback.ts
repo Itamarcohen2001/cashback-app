@@ -165,7 +165,8 @@ function isQualityCoupon(c: Coupon): boolean {
 
 /** שולף קופונים פעילים — הכול או לחנות מסוימת (דילים חמים ראשונים). */
 export async function fetchCoupons(storeId?: string): Promise<Coupon[]> {
-  if (USE_MOCK) return (await mock.listCoupons(storeId)).filter(isQualityCoupon);
+  if (USE_MOCK)
+    return (await mock.listCoupons(storeId)).filter(isQualityCoupon);
   let q = supabase.from("coupons").select(COUPON_SELECT).eq("active", true);
   if (storeId) q = q.eq("store_id", storeId);
   const { data, error } = await q
@@ -177,7 +178,8 @@ export async function fetchCoupons(storeId?: string): Promise<Coupon[]> {
 
 /** שולף את הדילים החמים (featured) לקרוסלת עמוד הבית. */
 export async function fetchFeaturedCoupons(): Promise<Coupon[]> {
-  if (USE_MOCK) return (await mock.listFeaturedCoupons()).filter(isQualityCoupon);
+  if (USE_MOCK)
+    return (await mock.listFeaturedCoupons()).filter(isQualityCoupon);
   const { data, error } = await supabase
     .from("coupons")
     .select(COUPON_SELECT)

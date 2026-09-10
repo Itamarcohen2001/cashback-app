@@ -156,6 +156,34 @@ export default function ProfileScreen() {
           )}
         </Card>
 
+        {/* גלו עוד */}
+        <View style={{ gap: spacing.sm }}>
+          <Text style={styles.groupLabel}>גלו עוד</Text>
+          <Card style={{ gap: 0, paddingVertical: spacing.xs }}>
+            <SettingRow
+              icon="construct-outline"
+              label="כלים שימושיים"
+              onPress={() => router.push("/tools")}
+            />
+            <SettingRow
+              icon="grid-outline"
+              label="כל החנויות"
+              onPress={() => router.push("/all-shops")}
+            />
+            <SettingRow
+              icon="albums-outline"
+              label="קולקציות"
+              onPress={() => router.push("/collections")}
+            />
+            <SettingRow
+              icon="extension-puzzle-outline"
+              label="תוסף הדפדפן"
+              onPress={() => router.push("/browser-extension")}
+              last
+            />
+          </Card>
+        </View>
+
         {/* חשבון */}
         <View style={{ gap: spacing.sm }}>
           <Text style={styles.groupLabel}>חשבון</Text>
