@@ -16,7 +16,11 @@ import { useRouter } from "expo-router";
 import * as Clipboard from "expo-clipboard";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
-import { brandLogoCandidates, formatDate, formatUserCashback } from "@/lib/format";
+import {
+  brandLogoCandidates,
+  formatDate,
+  formatUserCashback,
+} from "@/lib/format";
 import { Coupon, Store } from "@/lib/types";
 import { colors, font, gradients, radius, rtl, shadow, spacing } from "@/theme";
 
