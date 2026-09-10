@@ -37,7 +37,7 @@ export default function CollectionsScreen() {
         contentContainerStyle={styles.container}
         showsVerticalScrollIndicator={false}
       >
-        <ScreenHeader title="אוספים" subtitle="קולקציות חנויות לפי נושא" />
+        <ScreenHeader title="קולקציות" subtitle="חנויות נבחרות לפי נושא" />
         <View style={styles.grid}>
           {COLLECTIONS.map((c) => (
             <Pressable

@@ -35,6 +35,7 @@ const FALLBACK: Record<Code, number> = {
 export default function CurrencyScreen() {
   const [rates, setRates] = useState<Record<Code, number>>(FALLBACK);
   const [live, setLive] = useState(false);
+  const [updated, setUpdated] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [amount, setAmount] = useState("100");
   const [from, setFrom] = useState<Code>("USD");
@@ -53,6 +54,19 @@ export default function CurrencyScreen() {
           CNY: data.rates.CNY ?? FALLBACK.CNY,
         });
         setLive(true);
+        if (data.time_last_update_utc) {
+          try {
+            setUpdated(
+              new Date(data.time_last_update_utc).toLocaleDateString("he-IL", {
+                day: "2-digit",
+                month: "2-digit",
+                year: "numeric",
+              }),
+            );
+          } catch {
+            // מתעלמים מפורמט תאריך.
+          }
+        }
       }
     } catch {
       // נשארים עם שערי הגיבוי.
@@ -129,7 +143,7 @@ export default function CurrencyScreen() {
 
         <Text style={styles.note}>
           {live
-            ? "השערים מתעדכנים בזמן אמת."
+            ? `השערים הרשמיים מתעדכנים אחת ליום${updated ? ` · עודכן ${updated}` : ""}.`
             : "מוצגים שערים משוערים (אין חיבור לרשת)."}{" "}
           החישוב אינו כולל עמלת המרה של חברת האשראי (~2%–3%).
         </Text>

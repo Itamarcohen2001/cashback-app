@@ -43,13 +43,6 @@ const TOOLS: Array<{
     color: "#00C48C",
   },
   {
-    route: "/tools/zip",
-    title: "מאתר מיקוד",
-    desc: "מציאת מיקוד לפי כתובת",
-    icon: "location",
-    color: "#EC4899",
-  },
-  {
     route: "/tools/guide",
     title: "איך זה עובד",
     desc: "מדריך קאשבק וטיפים",

@@ -194,7 +194,7 @@ export default function StoresScreen() {
                   onPress={() => router.push("/all-shops")}
                 />
                 <ToolTile
-                  label="אוספים"
+                  label="קולקציות"
                   icon="albums"
                   color={colors.warning}
                   onPress={() => router.push("/collections")}

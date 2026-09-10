@@ -138,21 +138,46 @@ export async function fetchStore(id: string): Promise<Store | null> {
 
 const COUPON_SELECT = "*, store:stores(name, logo_url, base_url, category)";
 
+// כותרות גנריות/ריקות שמסמנות דיל לא-אינפורמטיבי — מסננים אותן מהתצוגה.
+const GENERIC_COUPON_TITLES = new Set([
+  "מבצע",
+  "דיל",
+  "הנחה",
+  "קופון",
+  "sale",
+  "deal",
+  "coupon",
+  "promo",
+  "offer",
+  "discount",
+]);
+
+/** קופון "איכותי" — כותרת אינפורמטיבית (לא ריקה/גנרית). */
+function isQualityCoupon(c: Coupon): boolean {
+  const t = (c.title ?? "").trim();
+  if (t.length < 5) return false;
+  if (GENERIC_COUPON_TITLES.has(t.toLowerCase())) return false;
+  if (c.store?.name && t.toLowerCase() === c.store.name.toLowerCase()) {
+    return false;
+  }
+  return true;
+}
+
 /** שולף קופונים פעילים — הכול או לחנות מסוימת (דילים חמים ראשונים). */
 export async function fetchCoupons(storeId?: string): Promise<Coupon[]> {
-  if (USE_MOCK) return mock.listCoupons(storeId);
+  if (USE_MOCK) return (await mock.listCoupons(storeId)).filter(isQualityCoupon);
   let q = supabase.from("coupons").select(COUPON_SELECT).eq("active", true);
   if (storeId) q = q.eq("store_id", storeId);
   const { data, error } = await q
     .order("featured", { ascending: false })
     .order("created_at", { ascending: false });
   if (error) throw error;
-  return (data ?? []) as Coupon[];
+  return ((data ?? []) as Coupon[]).filter(isQualityCoupon);
 }
 
 /** שולף את הדילים החמים (featured) לקרוסלת עמוד הבית. */
 export async function fetchFeaturedCoupons(): Promise<Coupon[]> {
-  if (USE_MOCK) return mock.listFeaturedCoupons();
+  if (USE_MOCK) return (await mock.listFeaturedCoupons()).filter(isQualityCoupon);
   const { data, error } = await supabase
     .from("coupons")
     .select(COUPON_SELECT)
@@ -160,7 +185,7 @@ export async function fetchFeaturedCoupons(): Promise<Coupon[]> {
     .eq("featured", true)
     .order("created_at", { ascending: false });
   if (error) throw error;
-  return (data ?? []) as Coupon[];
+  return ((data ?? []) as Coupon[]).filter(isQualityCoupon);
 }
 
 /**

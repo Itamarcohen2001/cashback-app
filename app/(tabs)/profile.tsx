@@ -83,25 +83,6 @@ export default function ProfileScreen() {
     if (ok) signOut();
   }
 
-  const steps = [
-    {
-      icon: "storefront-outline",
-      text: 'בוחרים חנות מהרשימה ולוחצים על "הפעלת קאשבק".',
-    },
-    {
-      icon: "cart-outline",
-      text: "קונים כרגיל באתר החנות שנפתח — בלי צורך בקודים או קופונים.",
-    },
-    {
-      icon: "hourglass-outline",
-      text: 'הקאשבק נרשם כ"ממתין", ומתאשר אוטומטית לאחר שהחנות מאשרת את הרכישה.',
-    },
-    {
-      icon: "cash-outline",
-      text: "כשמגיעים לסכום המינימלי מבקשים משיכה, והכסף מועבר אליכם בביט.",
-    },
-  ] as const;
-
   return (
     <SafeAreaView style={styles.safe} edges={["top"]}>
       <ScrollView
@@ -175,66 +156,50 @@ export default function ProfileScreen() {
           )}
         </Card>
 
-        <Card style={{ gap: spacing.md }}>
-          <Text style={styles.infoTitle}>איך זה עובד?</Text>
-          {steps.map((s, i) => (
-            <View key={i} style={styles.stepRow}>
-              <View style={styles.stepIcon}>
-                <Ionicons name={s.icon} size={18} color={colors.primary} />
-              </View>
-              <Text style={styles.stepText}>{s.text}</Text>
-            </View>
-          ))}
-        </Card>
+        {/* חשבון */}
+        <View style={{ gap: spacing.sm }}>
+          <Text style={styles.groupLabel}>חשבון</Text>
+          <Card style={{ gap: 0, paddingVertical: spacing.xs }}>
+            <SettingRow
+              icon="options-outline"
+              label="פאנל ניהול"
+              onPress={() => router.push("/admin")}
+              hidden={!user?.is_admin}
+            />
+            <SettingRow
+              icon="create-outline"
+              label="עריכת פרופיל"
+              onPress={() => router.push("/edit-profile")}
+              last
+            />
+          </Card>
+        </View>
 
-        {/* הגדרות */}
+        {/* מידע ותמיכה */}
+        <View style={{ gap: spacing.sm }}>
+          <Text style={styles.groupLabel}>מידע ותמיכה</Text>
+          <Card style={{ gap: 0, paddingVertical: spacing.xs }}>
+            <SettingRow
+              icon="help-circle-outline"
+              label="תמיכה ושאלות נפוצות"
+              onPress={() => router.push("/support")}
+            />
+            <SettingRow
+              icon="shield-checkmark-outline"
+              label="מדיניות פרטיות"
+              onPress={() => router.push("/privacy")}
+            />
+            <SettingRow
+              icon="document-text-outline"
+              label="תנאי שימוש"
+              onPress={() => router.push("/terms")}
+              last
+            />
+          </Card>
+        </View>
+
+        {/* פעולות חשבון */}
         <Card style={{ gap: 0, paddingVertical: spacing.xs }}>
-          <SettingRow
-            icon="construct-outline"
-            label="כלים שימושיים"
-            onPress={() => router.push("/tools")}
-          />
-          <SettingRow
-            icon="grid-outline"
-            label="כל החנויות"
-            onPress={() => router.push("/all-shops")}
-          />
-          <SettingRow
-            icon="albums-outline"
-            label="אוספים"
-            onPress={() => router.push("/collections")}
-          />
-          <SettingRow
-            icon="extension-puzzle-outline"
-            label="תוסף הדפדפן"
-            onPress={() => router.push("/browser-extension")}
-          />
-          <SettingRow
-            icon="options-outline"
-            label="פאנל ניהול"
-            onPress={() => router.push("/admin")}
-            hidden={!user?.is_admin}
-          />
-          <SettingRow
-            icon="create-outline"
-            label="עריכת פרופיל"
-            onPress={() => router.push("/edit-profile")}
-          />
-          <SettingRow
-            icon="help-circle-outline"
-            label="תמיכה ושאלות נפוצות"
-            onPress={() => router.push("/support")}
-          />
-          <SettingRow
-            icon="shield-checkmark-outline"
-            label="מדיניות פרטיות"
-            onPress={() => router.push("/privacy")}
-          />
-          <SettingRow
-            icon="document-text-outline"
-            label="תנאי שימוש"
-            onPress={() => router.push("/terms")}
-          />
           <SettingRow
             icon="trash-outline"
             label="מחיקת חשבון"
@@ -340,6 +305,13 @@ const styles = StyleSheet.create({
     fontWeight: "800",
     color: colors.text,
     textAlign: "right",
+  },
+  groupLabel: {
+    fontSize: font.sm,
+    fontWeight: "800",
+    color: colors.textMuted,
+    textAlign: "right",
+    marginStart: spacing.xs,
   },
   // משיכות
   emptyRow: { flexDirection: rtl.row, alignItems: "center", gap: spacing.sm },

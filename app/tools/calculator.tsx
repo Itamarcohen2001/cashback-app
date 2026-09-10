@@ -8,6 +8,7 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { Ionicons } from "@expo/vector-icons";
 import { fetchStores } from "@/lib/cashback";
 import { formatMoney } from "@/lib/format";
 import { Store } from "@/lib/types";
@@ -27,6 +28,7 @@ export default function CalculatorScreen() {
   const [stores, setStores] = useState<Store[]>([]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [amount, setAmount] = useState("");
+  const [query, setQuery] = useState("");
 
   const load = useCallback(async () => {
     try {
@@ -46,6 +48,12 @@ export default function CalculatorScreen() {
     () => stores.find((s) => s.id === selectedId) ?? null,
     [stores, selectedId],
   );
+
+  const visibleStores = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    if (!q) return stores.slice(0, 24);
+    return stores.filter((s) => s.name.toLowerCase().includes(q)).slice(0, 40);
+  }, [stores, query]);
 
   const amountNum = Number(amount.replace(/[^0-9.]/g, "")) || 0;
   const result = selected ? userCashbackFor(selected, amountNum) : 0;
@@ -74,12 +82,31 @@ export default function CalculatorScreen() {
           </View>
 
           <Text style={styles.sectionTitle}>בחירת חנות</Text>
+          <View style={styles.searchBar}>
+            <Ionicons name="search" size={18} color={colors.textMuted} />
+            <TextInput
+              value={query}
+              onChangeText={setQuery}
+              placeholder="חיפוש חנות"
+              placeholderTextColor={colors.textMuted}
+              style={styles.searchInput}
+            />
+            {query ? (
+              <Ionicons
+                name="close-circle"
+                size={18}
+                color={colors.textMuted}
+                onPress={() => setQuery("")}
+              />
+            ) : null}
+          </View>
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={styles.storeRow}
+            keyboardShouldPersistTaps="handled"
           >
-            {stores.map((s) => (
+            {visibleStores.map((s) => (
               <Pressable
                 key={s.id}
                 onPress={() => setSelectedId(s.id)}
@@ -94,6 +121,9 @@ export default function CalculatorScreen() {
                 </Text>
               </Pressable>
             ))}
+            {visibleStores.length === 0 ? (
+              <Text style={styles.noResults}>לא נמצאו חנויות</Text>
+            ) : null}
           </ScrollView>
         </Card>
 
@@ -150,6 +180,29 @@ const styles = StyleSheet.create({
     textAlign: "right",
   },
   storeRow: { gap: spacing.sm, paddingVertical: 2, paddingHorizontal: 2 },
+  searchBar: {
+    flexDirection: rtl.row,
+    alignItems: "center",
+    gap: spacing.sm,
+    backgroundColor: colors.bg,
+    borderRadius: radius.md,
+    paddingHorizontal: spacing.md,
+    height: 46,
+    borderWidth: 1,
+    borderColor: colors.border,
+  },
+  searchInput: {
+    flex: 1,
+    height: "100%",
+    fontSize: font.md,
+    color: colors.text,
+    textAlign: "right",
+  },
+  noResults: {
+    fontSize: font.sm,
+    color: colors.textMuted,
+    paddingVertical: spacing.md,
+  },
   storeChip: {
     width: 84,
     alignItems: "center",
