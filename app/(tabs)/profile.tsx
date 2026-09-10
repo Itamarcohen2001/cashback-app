@@ -213,25 +213,6 @@ export default function ProfileScreen() {
           </Card>
         </View>
 
-        {/* חשבון */}
-        <View style={{ gap: spacing.sm }}>
-          <Text style={styles.groupLabel}>חשבון</Text>
-          <Card style={{ gap: 0, paddingVertical: spacing.xs }}>
-            <SettingRow
-              icon="options-outline"
-              label="פאנל ניהול"
-              onPress={() => router.push("/admin")}
-              hidden={!user?.is_admin}
-            />
-            <SettingRow
-              icon="create-outline"
-              label="עריכת פרופיל"
-              onPress={() => router.push("/edit-profile")}
-              last
-            />
-          </Card>
-        </View>
-
         {/* מידע ותמיכה */}
         <View style={{ gap: spacing.sm }}>
           <Text style={styles.groupLabel}>מידע ותמיכה</Text>
@@ -255,22 +236,36 @@ export default function ProfileScreen() {
           </Card>
         </View>
 
-        {/* פעולות חשבון */}
-        <Card style={{ gap: 0, paddingVertical: spacing.xs }}>
-          <SettingRow
-            icon="trash-outline"
-            label="מחיקת חשבון"
-            onPress={onDeleteAccount}
-            danger
-          />
-          <SettingRow
-            icon="log-out-outline"
-            label="יציאה"
-            onPress={onSignOut}
-            danger
-            last
-          />
-        </Card>
+        {/* חשבון */}
+        <View style={{ gap: spacing.sm }}>
+          <Text style={styles.groupLabel}>חשבון</Text>
+          <Card style={{ gap: 0, paddingVertical: spacing.xs }}>
+            <SettingRow
+              icon="options-outline"
+              label="פאנל ניהול"
+              onPress={() => router.push("/admin")}
+              hidden={!user?.is_admin}
+            />
+            <SettingRow
+              icon="create-outline"
+              label="עריכת פרופיל"
+              onPress={() => router.push("/edit-profile")}
+            />
+            <SettingRow
+              icon="trash-outline"
+              label="מחיקת חשבון"
+              onPress={onDeleteAccount}
+              danger
+            />
+            <SettingRow
+              icon="log-out-outline"
+              label="יציאה"
+              onPress={onSignOut}
+              danger
+              last
+            />
+          </Card>
+        </View>
       </ScrollView>
     </SafeAreaView>
   );

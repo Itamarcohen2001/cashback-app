@@ -1,10 +1,4 @@
-import {
-  createContext,
-  useContext,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
+import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { Appearance, Platform } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { buildThemeCss } from "@/theme";
@@ -44,8 +38,8 @@ function applyMode(mode: Mode) {
 }
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [mode, setModeState] = useState<Mode>(
-    () => (Appearance.getColorScheme() === "dark" ? "dark" : "light"),
+  const [mode, setModeState] = useState<Mode>(() =>
+    Appearance.getColorScheme() === "dark" ? "dark" : "light",
   );
 
   // טעינה ראשונית: הזרקת CSS + החלת ההעדפה השמורה (או מצב המערכת).

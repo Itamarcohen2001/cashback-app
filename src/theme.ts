@@ -78,19 +78,18 @@ type PaletteKey = keyof typeof lightPalette;
 export const colors = Object.fromEntries(
   (Object.keys(lightPalette) as PaletteKey[]).map((k) => [
     k,
-    Platform.OS === "web" ? `var(--c-${k}, ${lightPalette[k]})` : lightPalette[k],
+    Platform.OS === "web"
+      ? `var(--c-${k}, ${lightPalette[k]})`
+      : lightPalette[k],
   ]),
 ) as Record<PaletteKey, string>;
 
 /** בונה את גיליון ה-CSS עם משתני מצב-יום ומצב-לילה (web בלבד). */
 export function buildThemeCss(): string {
   const toVars = (p: Record<string, string>) =>
-    (Object.keys(p) as PaletteKey[])
-      .map((k) => `--c-${k}:${p[k]};`)
-      .join("");
+    (Object.keys(p) as PaletteKey[]).map((k) => `--c-${k}:${p[k]};`).join("");
   return `:root{${toVars(lightPalette)}}\n:root[data-theme="dark"]{${toVars(darkPalette)}}`;
 }
-
 
 /** גרדיאנטים לרכיבים בולטים (כרטיס ארנק, כפתור ראשי וכו'). */
 export const gradients = {
