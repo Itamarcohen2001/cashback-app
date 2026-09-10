@@ -90,7 +90,7 @@ export function buildThemeCss(): string {
     (Object.keys(p) as PaletteKey[]).map((k) => `--c-${k}:${p[k]};`).join("");
   // איפוס מסגרת המיקוד (outline) של הדפדפן בכל שדות הקלט — חוויית חיפוש נקייה.
   const focusReset =
-    'input:focus,input:focus-visible,textarea:focus,textarea:focus-visible,[contenteditable]:focus{outline:none!important;box-shadow:none!important;}';
+    "input:focus,input:focus-visible,textarea:focus,textarea:focus-visible,[contenteditable]:focus{outline:none!important;box-shadow:none!important;}";
   return `${focusReset}\n:root{${toVars(lightPalette)}}\n:root[data-theme="dark"]{${toVars(darkPalette)}}`;
 }
 

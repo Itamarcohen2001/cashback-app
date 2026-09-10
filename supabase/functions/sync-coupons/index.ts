@@ -8,6 +8,18 @@ import { adminClient } from "../_shared/db.ts";
 import { getNetwork } from "../_shared/networks.ts";
 import { cors, json } from "../_shared/http.ts";
 
+/** מחלץ דומיין נקי מכתובת URL (למשל https://www.nike.com/x -> nike.com). */
+function domainOf(url: string | null | undefined): string | null {
+  if (!url) return null;
+  const cleaned = url
+    .trim()
+    .toLowerCase()
+    .replace(/^https?:\/\//, "")
+    .replace(/^www\./, "");
+  const domain = cleaned.split(/[/?#]/)[0];
+  return domain || null;
+}
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: cors });
 
@@ -41,21 +53,43 @@ Deno.serve(async (req) => {
 
   const db = adminClient();
 
-  // מיפוי network_offer_id -> store_id עבור החנויות של אותה רשת
+  // מיפוי קמפיין -> דומיין (מכל ההצעות המחוברות ברשת), לצורך קישור לפי דומיין.
+  const offerDomain = new Map<string, string>();
+  try {
+    const offers = await network.fetchOffers();
+    for (const o of offers) {
+      const d = domainOf(o.baseUrl);
+      if (d) offerDomain.set(o.externalId, d);
+    }
+  } catch (_e) {
+    // אם משיכת ההצעות נכשלה — ממשיכים עם קישור לפי network_offer_id בלבד.
+  }
+
+  // כל החנויות הפעילות: מיפוי לפי network_offer_id וגם לפי דומיין (קישור אוטומטי רחב).
   const { data: stores, error: storesErr } = await db
     .from("stores")
-    .select("id, network_offer_id")
-    .eq("network", network.name);
+    .select("id, base_url, network, network_offer_id")
+    .eq("active", true);
   if (storesErr) return json({ error: storesErr.message }, 500);
 
   const storeByOffer = new Map<string, string>();
+  const storeByDomain = new Map<string, string>();
   for (const s of stores ?? []) {
-    if (s.network_offer_id) storeByOffer.set(String(s.network_offer_id), s.id);
+    if (s.network_offer_id && s.network === network.name) {
+      storeByOffer.set(String(s.network_offer_id), s.id);
+    }
+    const d = domainOf(s.base_url);
+    if (d && !storeByDomain.has(d)) storeByDomain.set(d, s.id);
   }
 
   const rows = coupons
     .map((c) => {
-      const storeId = storeByOffer.get(c.campaignExternalId);
+      // עדיפות: קישור מפורש לפי network_offer_id; אחרת קישור אוטומטי לפי דומיין.
+      let storeId = storeByOffer.get(c.campaignExternalId);
+      if (!storeId) {
+        const d = offerDomain.get(c.campaignExternalId);
+        if (d) storeId = storeByDomain.get(d);
+      }
       if (!storeId) return null;
       return {
         store_id: storeId,

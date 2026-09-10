@@ -4,9 +4,9 @@ import {
   FlatList,
   Pressable,
   RefreshControl,
-  ScrollView,
   StyleSheet,
   Text,
+  TextInput,
   View,
 } from "react-native";
 import { useFocusEffect, useRouter } from "expo-router";
@@ -15,7 +15,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { fetchCoupons } from "@/lib/cashback";
 import { Coupon } from "@/lib/types";
 import { CouponCard, EmptyState, Skeleton } from "@/ui";
-import { colors, font, radius, shadow, spacing } from "@/theme";
+import { colors, font, radius, rtl, shadow, spacing } from "@/theme";
 
 export default function DealsScreen() {
   const router = useRouter();
@@ -23,6 +23,7 @@ export default function DealsScreen() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [category, setCategory] = useState<string | null>(null);
+  const [query, setQuery] = useState("");
 
   const load = useCallback(async () => {
     setError(null);
@@ -47,13 +48,18 @@ export default function DealsScreen() {
     return Array.from(set);
   }, [coupons]);
 
-  const filtered = useMemo(
-    () =>
-      category
-        ? coupons.filter((c) => c.store?.category === category)
-        : coupons,
-    [coupons, category],
-  );
+  const filtered = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    return coupons.filter((c) => {
+      const matchesCat = !category || c.store?.category === category;
+      const matchesQuery =
+        !q ||
+        c.title.toLowerCase().includes(q) ||
+        (c.store?.name?.toLowerCase().includes(q) ?? false) ||
+        (c.code?.toLowerCase().includes(q) ?? false);
+      return matchesCat && matchesQuery;
+    });
+  }, [coupons, category, query]);
 
   return (
     <SafeAreaView style={styles.safe} edges={["top"]}>
@@ -78,12 +84,27 @@ export default function DealsScreen() {
               </Text>
             </View>
 
+            <View style={styles.searchBar}>
+              <Ionicons name="search" size={20} color={colors.textMuted} />
+              <TextInput
+                value={query}
+                onChangeText={setQuery}
+                placeholder="חיפוש דיל, חנות או קוד"
+                placeholderTextColor={colors.textMuted}
+                style={styles.searchInput}
+              />
+              {query ? (
+                <Ionicons
+                  name="close-circle"
+                  size={18}
+                  color={colors.textMuted}
+                  onPress={() => setQuery("")}
+                />
+              ) : null}
+            </View>
+
             {categories.length > 0 ? (
-              <ScrollView
-                horizontal
-                showsHorizontalScrollIndicator={false}
-                contentContainerStyle={styles.chipsRow}
-              >
+              <View style={styles.chipsRow}>
                 <Chip
                   label="הכול"
                   active={!category}
@@ -97,7 +118,11 @@ export default function DealsScreen() {
                     onPress={() => setCategory(c)}
                   />
                 ))}
-              </ScrollView>
+              </View>
+            ) : null}
+
+            {!loading && filtered.length > 0 ? (
+              <Text style={styles.count}>{filtered.length} דילים פעילים</Text>
             ) : null}
           </View>
         }
@@ -168,7 +193,36 @@ const styles = StyleSheet.create({
     textAlign: "right",
     marginTop: spacing.xs,
   },
-  chipsRow: { gap: spacing.md, paddingVertical: 2, paddingHorizontal: 2 },
+  searchBar: {
+    flexDirection: rtl.row,
+    alignItems: "center",
+    gap: spacing.sm,
+    backgroundColor: colors.card,
+    borderRadius: radius.md,
+    paddingHorizontal: spacing.lg,
+    height: 50,
+    ...shadow.sm,
+  },
+  searchInput: {
+    flex: 1,
+    height: "100%",
+    fontSize: font.md,
+    color: colors.text,
+    textAlign: "right",
+  },
+  chipsRow: {
+    flexDirection: rtl.row,
+    flexWrap: "wrap",
+    gap: spacing.sm,
+    paddingVertical: 2,
+    paddingHorizontal: 2,
+  },
+  count: {
+    fontSize: font.sm,
+    fontWeight: "700",
+    color: colors.textMuted,
+    textAlign: "right",
+  },
   chip: {
     backgroundColor: colors.card,
     borderRadius: radius.pill,

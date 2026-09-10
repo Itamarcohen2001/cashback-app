@@ -16,7 +16,7 @@ import { useRouter } from "expo-router";
 import * as Clipboard from "expo-clipboard";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
-import { brandLogoCandidates, formatUserCashback } from "@/lib/format";
+import { brandLogoCandidates, formatDate, formatUserCashback } from "@/lib/format";
 import { Coupon, Store } from "@/lib/types";
 import { colors, font, gradients, radius, rtl, shadow, spacing } from "@/theme";
 
@@ -535,8 +535,45 @@ export function CouponCard({
           <Text style={styles.autoDealText}>דיל אוטומטי — ללא קוד</Text>
         </View>
       )}
+
+      {(() => {
+        const exp = couponExpiry(coupon.expires_at);
+        if (!exp) return null;
+        return (
+          <View style={styles.couponExpiry}>
+            <Ionicons
+              name="time-outline"
+              size={14}
+              color={exp.soon ? colors.warning : colors.textMuted}
+            />
+            <Text
+              style={[
+                styles.couponExpiryText,
+                exp.soon && { color: colors.warning },
+              ]}
+            >
+              {exp.label}
+            </Text>
+          </View>
+        );
+      })()}
     </Pressable>
   );
+}
+
+/** מחשב תווית תפוגה לקופון (null אם אין תאריך או שכבר פג). */
+function couponExpiry(
+  iso: string | null,
+): { label: string; soon: boolean } | null {
+  if (!iso) return null;
+  const end = new Date(iso).getTime();
+  if (Number.isNaN(end)) return null;
+  const days = Math.ceil((end - Date.now()) / 86400000);
+  if (days < 0) return null;
+  if (days === 0) return { label: "נגמר היום", soon: true };
+  if (days === 1) return { label: "נגמר מחר", soon: true };
+  if (days <= 7) return { label: `נגמר בעוד ${days} ימים`, soon: true };
+  return { label: `בתוקף עד ${formatDate(iso)}`, soon: false };
 }
 
 const styles = StyleSheet.create({
@@ -618,6 +655,17 @@ const styles = StyleSheet.create({
     fontSize: font.sm,
     fontWeight: "700",
     color: colors.accentDark,
+  },
+  couponExpiry: {
+    flexDirection: rtl.row,
+    alignItems: "center",
+    gap: spacing.xs,
+    alignSelf: rtl.start,
+  },
+  couponExpiryText: {
+    fontSize: font.sm,
+    fontWeight: "700",
+    color: colors.textMuted,
   },
   gradientWrap: { borderRadius: radius.lg, overflow: "hidden" },
   gradientInner: { borderRadius: radius.lg, padding: spacing.xl },
