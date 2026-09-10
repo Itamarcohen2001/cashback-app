@@ -1,7 +1,8 @@
 /** ערכת העיצוב המרכזית של CashyCash — מודרנית, נקייה ותוססת. */
 import { Platform } from "react-native";
 
-export const colors = {
+/** פלטת מצב-יום (ברירת מחדל). */
+export const lightPalette = {
   // מותג – סגול-אינדיגו תוסס
   primary: "#6C5CE7",
   primaryDark: "#4B3FD1",
@@ -17,6 +18,7 @@ export const colors = {
   bgAlt: "#FFFFFF",
   card: "#FFFFFF",
   border: "#ECEDF5",
+  backdrop: "#E9EAF2",
 
   // טקסט
   text: "#141527",
@@ -27,6 +29,7 @@ export const colors = {
   success: "#00C48C",
   warning: "#FF9F1C",
   danger: "#FF5A6A",
+  dangerSoft: "#FFE9EB",
 
   // מצבי קאשבק
   pending: "#FF9F1C",
@@ -34,6 +37,60 @@ export const colors = {
   paid: "#6C5CE7",
   rejected: "#FF5A6A",
 } as const;
+
+/** פלטת מצב-לילה — אותם מפתחות בדיוק. */
+export const darkPalette: Record<keyof typeof lightPalette, string> = {
+  primary: "#8B7CFF",
+  primaryDark: "#6C5CE7",
+  primaryLight: "#272446",
+
+  accent: "#00D9A0",
+  accentDark: "#28E0AE",
+  accentLight: "#123027",
+
+  bg: "#0E1016",
+  bgAlt: "#171A23",
+  card: "#1A1E2A",
+  border: "#2A2F3C",
+  backdrop: "#05060A",
+
+  text: "#F4F6FC",
+  textMuted: "#9AA0B4",
+  textInverse: "#FFFFFF",
+
+  success: "#00D9A0",
+  warning: "#FFB454",
+  danger: "#FF6B7A",
+  dangerSoft: "#3A2126",
+
+  pending: "#FFB454",
+  confirmed: "#00D9A0",
+  paid: "#8B7CFF",
+  rejected: "#FF6B7A",
+};
+
+type PaletteKey = keyof typeof lightPalette;
+
+/**
+ * ב-web הצבעים הם משתני-CSS (var) כדי לאפשר החלפת מצב-יום/לילה חיה ללא רירנדור.
+ * ב-native (שאין בו var) נשארים בערכי מצב-יום.
+ */
+export const colors = Object.fromEntries(
+  (Object.keys(lightPalette) as PaletteKey[]).map((k) => [
+    k,
+    Platform.OS === "web" ? `var(--c-${k}, ${lightPalette[k]})` : lightPalette[k],
+  ]),
+) as Record<PaletteKey, string>;
+
+/** בונה את גיליון ה-CSS עם משתני מצב-יום ומצב-לילה (web בלבד). */
+export function buildThemeCss(): string {
+  const toVars = (p: Record<string, string>) =>
+    (Object.keys(p) as PaletteKey[])
+      .map((k) => `--c-${k}:${p[k]};`)
+      .join("");
+  return `:root{${toVars(lightPalette)}}\n:root[data-theme="dark"]{${toVars(darkPalette)}}`;
+}
+
 
 /** גרדיאנטים לרכיבים בולטים (כרטיס ארנק, כפתור ראשי וכו'). */
 export const gradients = {

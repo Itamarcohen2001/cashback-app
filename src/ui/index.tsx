@@ -578,7 +578,7 @@ const styles = StyleSheet.create({
     lineHeight: 20,
   },
   hotBadge: {
-    backgroundColor: colors.danger + "1F",
+    backgroundColor: colors.dangerSoft,
     borderRadius: radius.pill,
     paddingVertical: 4,
     paddingHorizontal: spacing.sm,

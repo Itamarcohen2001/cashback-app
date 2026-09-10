@@ -6,6 +6,7 @@ import {
   Pressable,
   ScrollView,
   StyleSheet,
+  Switch,
   Text,
   View,
 } from "react-native";
@@ -13,6 +14,7 @@ import { useFocusEffect, useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { useAuth } from "@/context/AuthContext";
+import { useThemeMode } from "@/context/ThemeContext";
 import { Card, GradientCard } from "@/ui";
 import { fetchPayouts } from "@/lib/cashback";
 import { formatDate, formatMoney } from "@/lib/format";
@@ -43,6 +45,7 @@ function confirmAction(message: string): Promise<boolean> {
 
 export default function ProfileScreen() {
   const { user, signOut, deleteAccount } = useAuth();
+  const { mode, toggle } = useThemeMode();
   const router = useRouter();
   const fullName = user?.full_name || "משתמש";
 
@@ -155,6 +158,32 @@ export default function ProfileScreen() {
             })
           )}
         </Card>
+
+        {/* תצוגה */}
+        <View style={{ gap: spacing.sm }}>
+          <Text style={styles.groupLabel}>תצוגה</Text>
+          <Card style={styles.themeCard}>
+            <View style={styles.themeIcon}>
+              <Ionicons
+                name={mode === "dark" ? "moon" : "sunny"}
+                size={20}
+                color={colors.primary}
+              />
+            </View>
+            <View style={{ flex: 1 }}>
+              <Text style={styles.themeLabel}>מצב לילה</Text>
+              <Text style={styles.themeHint}>
+                {mode === "dark" ? "מופעל" : "כבוי"}
+              </Text>
+            </View>
+            <Switch
+              value={mode === "dark"}
+              onValueChange={toggle}
+              trackColor={{ false: colors.border, true: colors.primary }}
+              thumbColor={colors.card}
+            />
+          </Card>
+        </View>
 
         {/* גלו עוד */}
         <View style={{ gap: spacing.sm }}>
@@ -340,6 +369,30 @@ const styles = StyleSheet.create({
     color: colors.textMuted,
     textAlign: "right",
     marginStart: spacing.xs,
+  },
+  themeCard: {
+    flexDirection: rtl.row,
+    alignItems: "center",
+    gap: spacing.md,
+  },
+  themeIcon: {
+    width: 44,
+    height: 44,
+    borderRadius: radius.md,
+    backgroundColor: colors.primaryLight,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  themeLabel: {
+    fontSize: font.md,
+    fontWeight: "800",
+    color: colors.text,
+    textAlign: "right",
+  },
+  themeHint: {
+    fontSize: font.sm,
+    color: colors.textMuted,
+    textAlign: "right",
   },
   // משיכות
   emptyRow: { flexDirection: rtl.row, alignItems: "center", gap: spacing.sm },

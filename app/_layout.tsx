@@ -4,6 +4,7 @@ import { Stack, useRouter, useSegments } from "expo-router";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
 import { AuthProvider, useAuth } from "@/context/AuthContext";
+import { ThemeProvider } from "@/context/ThemeContext";
 import { colors, shadow } from "@/theme";
 
 // כפיית כיווניות RTL עבור ממשק בעברית.
@@ -33,15 +34,17 @@ function AuthGate() {
 export default function RootLayout() {
   return (
     <SafeAreaProvider>
-      <StatusBar style="dark" />
-      <AuthProvider>
-        {/* בדפדפן: ממרכזים את התוכן לעמודה ברוחב מובייל כדי שלא יימתח על כל המסך. */}
-        <View style={styles.backdrop}>
-          <View style={styles.frame}>
-            <AuthGate />
+      <StatusBar style="auto" />
+      <ThemeProvider>
+        <AuthProvider>
+          {/* בדפדפן: ממרכזים את התוכן לעמודה ברוחב מובייל כדי שלא יימתח על כל המסך. */}
+          <View style={styles.backdrop}>
+            <View style={styles.frame}>
+              <AuthGate />
+            </View>
           </View>
-        </View>
-      </AuthProvider>
+        </AuthProvider>
+      </ThemeProvider>
     </SafeAreaProvider>
   );
 }
@@ -51,7 +54,7 @@ const isWeb = Platform.OS === "web";
 const styles = StyleSheet.create({
   backdrop: {
     flex: 1,
-    backgroundColor: isWeb ? "#E9EAF2" : colors.bg,
+    backgroundColor: isWeb ? colors.backdrop : colors.bg,
     alignItems: "center",
   },
   frame: {
