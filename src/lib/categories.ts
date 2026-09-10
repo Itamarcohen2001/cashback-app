@@ -23,6 +23,10 @@ const META: Record<string, { icon: IoniconName; color: string }> = {
   ספרים: { icon: "book", color: "#A29BFE" },
   "יופי וטיפוח": { icon: "sparkles", color: "#E84393" },
   "מזון ומשלוחים": { icon: "fast-food", color: "#FDCB6E" },
+  "פנאי ובידור": { icon: "ticket", color: "#F97316" },
+  "שירותים דיגיטליים": { icon: "laptop", color: "#0EA5E9" },
+  "פיננסים וביטוח": { icon: "card", color: "#10B981" },
+  "חיות מחמד": { icon: "paw", color: "#8B5CF6" },
 };
 
 const FALLBACK: { icon: IoniconName; color: string } = {

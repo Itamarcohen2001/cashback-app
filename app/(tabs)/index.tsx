@@ -127,6 +127,8 @@ export default function StoresScreen() {
       <FlatList
         data={filtered}
         keyExtractor={(s) => s.id}
+        numColumns={3}
+        columnWrapperStyle={styles.gridRow}
         contentContainerStyle={styles.list}
         showsVerticalScrollIndicator={false}
         refreshControl={
@@ -171,6 +173,46 @@ export default function StoresScreen() {
                 </View>
               </View>
             </GradientCard>
+
+            <View style={{ gap: spacing.sm }}>
+              <Text style={styles.sectionTitle}>גלו עוד ✨</Text>
+              <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={styles.toolsRow}
+              >
+                <ToolTile
+                  label="כלים שימושיים"
+                  icon="construct"
+                  color={colors.primary}
+                  onPress={() => router.push("/tools")}
+                />
+                <ToolTile
+                  label="כל החנויות"
+                  icon="grid"
+                  color={colors.accent}
+                  onPress={() => router.push("/all-shops")}
+                />
+                <ToolTile
+                  label="אוספים"
+                  icon="albums"
+                  color={colors.warning}
+                  onPress={() => router.push("/collections")}
+                />
+                <ToolTile
+                  label="תוסף דפדפן"
+                  icon="extension-puzzle"
+                  color="#0EA5E9"
+                  onPress={() => router.push("/browser-extension")}
+                />
+                <ToolTile
+                  label="דילים חמים"
+                  icon="flame"
+                  color={colors.danger}
+                  onPress={() => router.push("/deals")}
+                />
+              </ScrollView>
+            </View>
 
             {categories.length > 0 ? (
               <View style={{ gap: spacing.sm }}>
@@ -325,35 +367,62 @@ export default function StoresScreen() {
         renderItem={({ item }) => (
           <Pressable
             style={({ pressed }) => [
-              styles.row,
+              styles.gridTile,
               shadow.sm,
               pressed && styles.pressed,
             ]}
             onPress={() => router.push(`/store/${item.id}`)}
           >
-            <StoreLogo store={item} size={56} />
-            <View style={{ flex: 1, gap: 2 }}>
-              <Text style={styles.storeName} numberOfLines={1}>
-                {item.name}
-              </Text>
-              {item.category ? (
-                <Text style={styles.category}>{item.category}</Text>
-              ) : null}
+            <View style={styles.gridHeart}>
+              <HeartButton
+                active={favoriteIds.includes(item.id)}
+                onPress={() => onToggleFavorite(item.id)}
+                size={16}
+              />
             </View>
+            <StoreLogo store={item} size={72} cornerRadius={18} />
+            <Text style={styles.gridName} numberOfLines={1}>
+              {item.name}
+            </Text>
             <View style={styles.cashPill}>
               <Text style={styles.cashPillText}>
                 {formatUserCashback(item)}
               </Text>
             </View>
-            <HeartButton
-              active={favoriteIds.includes(item.id)}
-              onPress={() => onToggleFavorite(item.id)}
-              size={20}
-            />
           </Pressable>
         )}
       />
     </SafeAreaView>
+  );
+}
+
+function ToolTile({
+  label,
+  icon,
+  color,
+  onPress,
+}: {
+  label: string;
+  icon: React.ComponentProps<typeof Ionicons>["name"];
+  color: string;
+  onPress: () => void;
+}) {
+  return (
+    <Pressable
+      style={({ pressed }) => [
+        styles.toolTile,
+        shadow.sm,
+        pressed && styles.pressed,
+      ]}
+      onPress={onPress}
+    >
+      <View style={[styles.toolIcon, { backgroundColor: color + "1F" }]}>
+        <Ionicons name={icon} size={24} color={color} />
+      </View>
+      <Text style={styles.toolLabel} numberOfLines={1}>
+        {label}
+      </Text>
+    </Pressable>
   );
 }
 
@@ -418,6 +487,51 @@ const styles = StyleSheet.create({
     paddingTop: spacing.lg,
     paddingBottom: 130,
     gap: spacing.md,
+  },
+  gridRow: { gap: spacing.md },
+  gridTile: {
+    flex: 1,
+    maxWidth: "31.5%",
+    alignItems: "center",
+    gap: spacing.sm,
+    backgroundColor: colors.card,
+    borderRadius: radius.lg,
+    paddingVertical: spacing.lg,
+    paddingHorizontal: spacing.sm,
+    borderWidth: 1,
+    borderColor: colors.border,
+  },
+  gridHeart: { position: "absolute", top: 6, insetInlineStart: 6, zIndex: 2 },
+  gridName: {
+    fontSize: font.md,
+    fontWeight: "800",
+    color: colors.text,
+    textAlign: "center",
+  },
+  toolsRow: { gap: spacing.md, paddingVertical: 2, paddingHorizontal: 2 },
+  toolTile: {
+    width: 104,
+    alignItems: "center",
+    gap: spacing.sm,
+    backgroundColor: colors.card,
+    borderRadius: radius.lg,
+    paddingVertical: spacing.md,
+    paddingHorizontal: spacing.sm,
+    borderWidth: 1,
+    borderColor: colors.border,
+  },
+  toolIcon: {
+    width: 48,
+    height: 48,
+    borderRadius: radius.md,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  toolLabel: {
+    fontSize: font.sm,
+    fontWeight: "700",
+    color: colors.text,
+    textAlign: "center",
   },
   greetRow: { flexDirection: rtl.row, alignItems: "center", gap: spacing.md },
   greetAvatar: {

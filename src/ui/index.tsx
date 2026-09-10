@@ -11,12 +11,86 @@ import {
   View,
   ViewStyle,
 } from "react-native";
+import { useRouter } from "expo-router";
 import * as Clipboard from "expo-clipboard";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
-import { brandLogoCandidates } from "@/lib/format";
-import { Coupon } from "@/lib/types";
+import { brandLogoCandidates, formatUserCashback } from "@/lib/format";
+import { Coupon, Store } from "@/lib/types";
 import { colors, font, gradients, radius, rtl, shadow, spacing } from "@/theme";
+/** כותרת מסך עם כפתור חזרה — עקבי לכל המסכים הפנימיים. */
+export function ScreenHeader({
+  title,
+  subtitle,
+}: {
+  title: string;
+  subtitle?: string;
+}) {
+  const router = useRouter();
+  return (
+    <View style={styles.headerRow}>
+      <Pressable
+        onPress={() =>
+          router.canGoBack() ? router.back() : router.replace("/(tabs)")
+        }
+        style={styles.headerBack}
+        accessibilityRole="button"
+        accessibilityLabel="חזרה"
+      >
+        <Ionicons name="chevron-forward" size={22} color={colors.text} />
+      </Pressable>
+      <View style={{ flex: 1 }}>
+        <Text style={styles.headerTitle}>{title}</Text>
+        {subtitle ? (
+          <Text style={styles.headerSubtitle}>{subtitle}</Text>
+        ) : null}
+      </View>
+    </View>
+  );
+}
+
+/** כרטיס חנות בפריסת גריד (לוגו + שם + קאשבק + מועדפים). */
+export function StoreTile({
+  store,
+  onPress,
+  favorite,
+  onToggleFavorite,
+}: {
+  store: Store;
+  onPress: () => void;
+  favorite?: boolean;
+  onToggleFavorite?: () => void;
+}) {
+  return (
+    <Pressable
+      onPress={onPress}
+      style={({ pressed }) => [
+        styles.storeTile,
+        shadow.sm,
+        pressed && styles.pressed,
+      ]}
+    >
+      {onToggleFavorite ? (
+        <View style={styles.storeTileHeart}>
+          <HeartButton
+            active={Boolean(favorite)}
+            onPress={onToggleFavorite}
+            size={16}
+          />
+        </View>
+      ) : null}
+      <StoreLogo store={store} size={72} cornerRadius={18} />
+      <Text style={styles.storeTileName} numberOfLines={1}>
+        {store.name}
+      </Text>
+      <View style={styles.storeTilePill}>
+        <Text style={styles.storeTilePillText}>
+          {formatUserCashback(store)}
+        </Text>
+      </View>
+    </Pressable>
+  );
+}
 
 /** לוגו חנות: מנסה מספר מקורות לוגו אמיתיים, ונופל לאות ראשונה אם כולם נכשלו. */
 export function StoreLogo({
@@ -514,4 +588,65 @@ const styles = StyleSheet.create({
   },
   dot: { width: 6, height: 6, borderRadius: 3 },
   badgeText: { fontSize: font.sm, fontWeight: "800" },
+  headerRow: {
+    flexDirection: rtl.row,
+    alignItems: "center",
+    gap: spacing.md,
+  },
+  headerBack: {
+    width: 40,
+    height: 40,
+    borderRadius: radius.pill,
+    backgroundColor: colors.card,
+    alignItems: "center",
+    justifyContent: "center",
+    ...shadow.sm,
+  },
+  headerTitle: {
+    fontSize: font.xxl,
+    fontWeight: "900",
+    color: colors.text,
+    textAlign: "right",
+  },
+  headerSubtitle: {
+    fontSize: font.sm,
+    color: colors.textMuted,
+    textAlign: "right",
+    marginTop: 2,
+  },
+  storeTile: {
+    flex: 1,
+    maxWidth: "31.5%",
+    alignItems: "center",
+    gap: spacing.sm,
+    backgroundColor: colors.card,
+    borderRadius: radius.lg,
+    paddingVertical: spacing.lg,
+    paddingHorizontal: spacing.sm,
+    borderWidth: 1,
+    borderColor: colors.border,
+  },
+  storeTileHeart: {
+    position: "absolute",
+    top: 6,
+    insetInlineStart: 6,
+    zIndex: 2,
+  },
+  storeTileName: {
+    fontSize: font.md,
+    fontWeight: "800",
+    color: colors.text,
+    textAlign: "center",
+  },
+  storeTilePill: {
+    backgroundColor: colors.accentLight,
+    borderRadius: radius.pill,
+    paddingVertical: 6,
+    paddingHorizontal: spacing.md,
+  },
+  storeTilePillText: {
+    color: colors.accentDark,
+    fontWeight: "900",
+    fontSize: font.sm,
+  },
 });
