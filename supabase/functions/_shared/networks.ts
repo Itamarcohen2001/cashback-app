@@ -247,6 +247,124 @@ class AdmitadNetwork implements AffiliateNetwork {
   }
 }
 
+// ============================================================
+// Awin — מימוש אמיתי (מביא חנויות + שיעורי עמלה + קישור מעקב)
+// ============================================================
+
+const AWIN_API = "https://api.awin.com";
+
+interface AwinCommission {
+  min?: number;
+  max?: number;
+  type?: string; // "percentage" | "amount" ...
+}
+
+interface AwinProgramme {
+  id: number; // advertiser id (mid)
+  name: string;
+  displayUrl?: string;
+  clickThroughUrl?: string;
+  logoUrl?: string;
+  currencyCode?: string;
+  commissionRange?: AwinCommission[];
+}
+
+class AwinNetwork implements AffiliateNetwork {
+  readonly name = "awin";
+  private token = Deno.env.get("AWIN_API_TOKEN") ?? "";
+  private publisherId = Deno.env.get("AWIN_PUBLISHER_ID") ?? "";
+
+  private headers() {
+    return { Authorization: `Bearer ${this.token}` };
+  }
+
+  async fetchOffers(): Promise<NetworkOffer[]> {
+    if (!this.token || !this.publisherId) {
+      throw new Error("חסרים AWIN_API_TOKEN / AWIN_PUBLISHER_ID");
+    }
+    // רק תוכניות שהצטרפנו אליהן (relationship=joined).
+    const res = await fetch(
+      `${AWIN_API}/publishers/${this.publisherId}/programmes?relationship=joined`,
+      { headers: this.headers() },
+    );
+    if (!res.ok) {
+      throw new Error(`Awin programmes נכשל: ${res.status} ${await res.text()}`);
+    }
+    const programmes: AwinProgramme[] = await res.json();
+    const offers: NetworkOffer[] = [];
+    for (const p of programmes) {
+      const baseUrl = p.displayUrl || p.clickThroughUrl || "";
+      if (!baseUrl) continue;
+      const rate = parseAwinRate(p.commissionRange);
+      // קישור מעקב של Awin: cread.php עם awinmid/awinaffid + clickref(subid) + יעד (ued).
+      const template =
+        `https://www.awin1.com/cread.php?awinmid=${p.id}` +
+        `&awinaffid=${this.publisherId}&clickref={SUBID}` +
+        `&ued=${encodeURIComponent(baseUrl)}`;
+      offers.push({
+        externalId: String(p.id),
+        name: p.name,
+        category: null,
+        description: null,
+        logoUrl: p.logoUrl ?? null,
+        baseUrl,
+        affiliateUrlTemplate: template,
+        variable: false,
+        ...rate,
+      });
+    }
+    return offers;
+  }
+
+  async fetchCoupons(): Promise<NetworkCoupon[]> {
+    // ל-API של Awin (publisher) אין endpoint קופונים פשוט — דילים מגיעים דרך פידים.
+    // כרגע Awin תורם חנויות + קאשבק בלבד; קופונים נשארים מ-Admitad.
+    return [];
+  }
+
+  parsePostback(url: URL, body: Record<string, unknown> | null): PostbackEvent {
+    // Awin מזכה דרך משיכת transactions ב-API (לא postback). מפרסר מינימלי לתאימות.
+    const q = (k: string): string | null =>
+      url.searchParams.get(k) ?? (body?.[k] != null ? String(body[k]) : null);
+    const num = (v: string | null): number | null =>
+      v != null && v !== "" && !Number.isNaN(Number(v)) ? Number(v) : null;
+    return {
+      subid: q("clickref") ?? q("subid") ?? "",
+      orderAmount: num(q("totalAmount")),
+      reportedCashback: num(q("commissionAmount")),
+      currency: q("currency"),
+      status: "pending",
+      networkTxnId: q("transactionId") ?? null,
+    };
+  }
+}
+
+/** מחלץ שיעור עמלה מ-commissionRange של Awin; ברירת מחדל 5% אם לא נמצא. */
+function parseAwinRate(range?: AwinCommission[]): {
+  cashbackType: CashbackType;
+  cashbackValue: number;
+} {
+  let best = 0;
+  let isFixed = false;
+  for (const r of range ?? []) {
+    const val = Number(r.max ?? r.min ?? 0);
+    const isPct = (r.type ?? "percentage").toLowerCase().startsWith("perc");
+    if (isPct) {
+      if (val > best) {
+        best = val;
+        isFixed = false;
+      }
+    } else if (best === 0 && val > 0) {
+      best = val;
+      isFixed = true;
+    }
+  }
+  if (best > 0) {
+    return { cashbackType: isFixed ? "fixed" : "percent", cashbackValue: best };
+  }
+  return { cashbackType: "percent", cashbackValue: 5 };
+}
+
 /** ממפה קטגוריה מהרשת (רוסית/אנגלית) לעברית; אם לא מזוהה — null (ללא שפה זרה). */
 function mapCategory(name?: string): string | null {
   if (!name) return null;
@@ -379,9 +497,7 @@ function summarizeCouponHe(c: AdmitadCoupon): {
 
   // הגבלת מינימום קנייה כללית (אם לא נתפסה למעלה)
   if (!minPurchase) {
-    const over = name.match(
-      new RegExp(`(?:over|above|от|מעל)\\s*${CUR}`, "i"),
-    );
+    const over = name.match(new RegExp(`(?:over|above|от|מעל)\\s*${CUR}`, "i"));
     if (over) minPurchase = `${over[1]}${over[2]}`;
   }
 
@@ -405,7 +521,18 @@ export function getNetwork(): AffiliateNetwork {
   switch (name) {
     case "admitad":
       return new AdmitadNetwork();
+    case "awin":
+      return new AwinNetwork();
     default:
       throw new Error(`רשת שותפים לא נתמכת: ${name}`);
   }
+}
+
+/** מחזיר את כל רשתות השותפים המוגדרות (לפי מפתחות סביבה קיימים). */
+export function getNetworks(): AffiliateNetwork[] {
+  const nets: AffiliateNetwork[] = [];
+  if (Deno.env.get("ADMITAD_CLIENT_ID")) nets.push(new AdmitadNetwork());
+  if (Deno.env.get("AWIN_API_TOKEN")) nets.push(new AwinNetwork());
+  if (nets.length === 0) nets.push(new AdmitadNetwork());
+  return nets;
 }

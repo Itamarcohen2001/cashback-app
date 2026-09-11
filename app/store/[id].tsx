@@ -19,7 +19,11 @@ import {
   fetchStore,
   simulatePurchase,
 } from "@/lib/cashback";
-import { formatMoney, formatUserCashback, isStoreTrackable } from "@/lib/format";
+import {
+  formatMoney,
+  formatUserCashback,
+  isStoreTrackable,
+} from "@/lib/format";
 import { addRecentStore } from "@/lib/recent";
 import { isFavorite, toggleFavorite } from "@/lib/favorites";
 import { Coupon, Store } from "@/lib/types";
@@ -178,9 +182,7 @@ export default function StoreScreen() {
 
         <Button
           label={
-            isStoreTrackable(store)
-              ? "הפעלת קאשבק ומעבר לחנות"
-              : "מעבר לחנות"
+            isStoreTrackable(store) ? "הפעלת קאשבק ומעבר לחנות" : "מעבר לחנות"
           }
           onPress={onActivate}
           loading={activating}
