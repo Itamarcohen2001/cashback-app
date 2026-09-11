@@ -15,7 +15,8 @@ type Status = "pending" | "confirmed" | "rejected";
 function mapStatus(raw?: string): Status {
   const s = (raw ?? "").toLowerCase();
   if (s === "approved" || s === "confirmed") return "confirmed";
-  if (s === "declined" || s === "deleted" || s === "rejected") return "rejected";
+  if (s === "declined" || s === "deleted" || s === "rejected")
+    return "rejected";
   return "pending";
 }
 

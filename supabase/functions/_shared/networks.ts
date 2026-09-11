@@ -377,7 +377,8 @@ export class AwinNetwork implements AffiliateNetwork {
         });
       }
       const total = data.pagination?.total ?? out.length;
-      if (rows.length < pageSize || page * pageSize >= total || page > 50) break;
+      if (rows.length < pageSize || page * pageSize >= total || page > 50)
+        break;
       page++;
     }
     return out;
