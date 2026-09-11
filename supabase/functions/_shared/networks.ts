@@ -269,7 +269,31 @@ interface AwinProgramme {
   commissionRange?: AwinCommission[];
 }
 
-class AwinNetwork implements AffiliateNetwork {
+interface AwinPromotion {
+  promotionId?: number;
+  id?: number;
+  title?: string;
+  description?: string;
+  code?: string | null;
+  voucher?: { code?: string | null } | null;
+  endDate?: string | null;
+  endDateTime?: string | null;
+  exclusive?: boolean;
+  advertiser?: { id?: number } | null;
+  advertiserId?: number;
+}
+
+export interface AwinTransaction {
+  id: number | string;
+  transactionDate?: string;
+  commissionStatus?: string; // pending | approved | declined | deleted
+  commissionAmount?: { amount?: number; currency?: string };
+  saleAmount?: { amount?: number; currency?: string };
+  clickRef?: string | null;
+  advertiserId?: number;
+}
+
+export class AwinNetwork implements AffiliateNetwork {
   readonly name = "awin";
   private token = Deno.env.get("AWIN_API_TOKEN") ?? "";
   private publisherId = Deno.env.get("AWIN_PUBLISHER_ID") ?? "";
@@ -288,7 +312,9 @@ class AwinNetwork implements AffiliateNetwork {
       { headers: this.headers() },
     );
     if (!res.ok) {
-      throw new Error(`Awin programmes נכשל: ${res.status} ${await res.text()}`);
+      throw new Error(
+        `Awin programmes נכשל: ${res.status} ${await res.text()}`,
+      );
     }
     const programmes: AwinProgramme[] = await res.json();
     const offers: NetworkOffer[] = [];
@@ -317,9 +343,79 @@ class AwinNetwork implements AffiliateNetwork {
   }
 
   async fetchCoupons(): Promise<NetworkCoupon[]> {
-    // ל-API של Awin (publisher) אין endpoint קופונים פשוט — דילים מגיעים דרך פידים.
-    // כרגע Awin תורם חנויות + קאשבק בלבד; קופונים נשארים מ-Admitad.
-    return [];
+    if (!this.token || !this.publisherId) return [];
+    const out: NetworkCoupon[] = [];
+    const pageSize = 100;
+    let page = 1;
+    while (true) {
+      const res = await fetch(
+        `${AWIN_API}/publisher/${this.publisherId}/promotions/`,
+        {
+          method: "POST",
+          headers: { ...this.headers(), "Content-Type": "application/json" },
+          body: JSON.stringify({
+            filters: { membership: "joined" },
+            pagination: { page, pageSize },
+          }),
+        },
+      );
+      // אם ה-endpoint לא זמין/משתנה — לא מפילים את הסנכרון, פשוט בלי קופוני Awin.
+      if (!res.ok) break;
+      const data = await res.json();
+      const rows: AwinPromotion[] = data.data ?? data.promotions ?? [];
+      for (const p of rows) {
+        const advId = p.advertiser?.id ?? p.advertiserId;
+        if (!advId) continue;
+        out.push({
+          externalId: String(p.promotionId ?? p.id),
+          campaignExternalId: String(advId),
+          title: (p.title ?? p.description ?? "מבצע").trim(),
+          code: normalizePromocode(p.voucher?.code ?? p.code ?? null),
+          description: p.description ?? null,
+          expiresAt: p.endDate ?? p.endDateTime ?? null,
+          featured: Boolean(p.exclusive),
+        });
+      }
+      const total = data.pagination?.total ?? out.length;
+      if (rows.length < pageSize || page * pageSize >= total || page > 50) break;
+      page++;
+    }
+    return out;
+  }
+
+  async fetchCouponsRaw(): Promise<unknown[]> {
+    const res = await fetch(
+      `${AWIN_API}/publisher/${this.publisherId}/promotions/`,
+      {
+        method: "POST",
+        headers: { ...this.headers(), "Content-Type": "application/json" },
+        body: JSON.stringify({
+          filters: { membership: "joined" },
+          pagination: { page: 1, pageSize: 20 },
+        }),
+      },
+    );
+    const data = await res.json();
+    return (data.data ?? data.promotions ?? []) as unknown[];
+  }
+
+  /** מושך עסקאות (transactions) לזיכוי קאשבק — לא חלק מהממשק, ייחודי ל-Awin. */
+  async fetchTransactions(
+    startDate: string,
+    endDate: string,
+  ): Promise<AwinTransaction[]> {
+    if (!this.token || !this.publisherId) return [];
+    const url =
+      `${AWIN_API}/publishers/${this.publisherId}/transactions/` +
+      `?startDate=${encodeURIComponent(startDate)}` +
+      `&endDate=${encodeURIComponent(endDate)}&timezone=UTC&dateType=transaction`;
+    const res = await fetch(url, { headers: this.headers() });
+    if (!res.ok) {
+      throw new Error(
+        `Awin transactions נכשל: ${res.status} ${await res.text()}`,
+      );
+    }
+    return (await res.json()) as AwinTransaction[];
   }
 
   parsePostback(url: URL, body: Record<string, unknown> | null): PostbackEvent {
