@@ -55,6 +55,7 @@ export interface AffiliateNetwork {
   fetchOffers(): Promise<NetworkOffer[]>;
   fetchCoupons(): Promise<NetworkCoupon[]>;
   fetchCouponsRaw?(): Promise<unknown[]>;
+  fetchOffersRaw?(): Promise<unknown[]>;
   parsePostback(url: URL, body: Record<string, unknown> | null): PostbackEvent;
 }
 
@@ -266,6 +267,7 @@ interface AwinProgramme {
   clickThroughUrl?: string;
   logoUrl?: string;
   currencyCode?: string;
+  primarySector?: string;
   commissionRange?: AwinCommission[];
 }
 
@@ -321,7 +323,9 @@ export class AwinNetwork implements AffiliateNetwork {
     for (const p of programmes) {
       const baseUrl = p.displayUrl || p.clickThroughUrl || "";
       if (!baseUrl) continue;
-      const rate = parseAwinRate(p.commissionRange);
+      // שיעור אמיתי מ-programmedetails; אם אין — נופלים ל-commissionRange/ברירת מחדל.
+      const rate =
+        (await this.commissionFor(p.id)) ?? parseAwinRate(p.commissionRange);
       // קישור מעקב של Awin: cread.php עם awinmid/awinaffid + clickref(subid) + יעד (ued).
       const template =
         `https://www.awin1.com/cread.php?awinmid=${p.id}` +
@@ -330,7 +334,7 @@ export class AwinNetwork implements AffiliateNetwork {
       offers.push({
         externalId: String(p.id),
         name: p.name,
-        category: null,
+        category: mapAwinCategory(p.primarySector),
         description: null,
         logoUrl: p.logoUrl ?? null,
         baseUrl,
@@ -340,6 +344,82 @@ export class AwinNetwork implements AffiliateNetwork {
       });
     }
     return offers;
+  }
+
+  /** מושך את שיעור העמלה האמיתי מ-programmedetails (null אם לא נמצא). */
+  private async commissionFor(
+    advertiserId: number,
+  ): Promise<{ cashbackType: CashbackType; cashbackValue: number } | null> {
+    try {
+      const res = await fetch(
+        `${AWIN_API}/publishers/${this.publisherId}/programmedetails?advertiserId=${advertiserId}`,
+        { headers: this.headers() },
+      );
+      if (!res.ok) return null;
+      const data = await res.json();
+      const range: AwinCommission[] =
+        data?.commissionRange ?? data?.programmeInfo?.commissionRange ?? [];
+      let best = 0;
+      let isFixed = false;
+      for (const r of range) {
+        const val = Number(r.max ?? r.min ?? 0);
+        const isPct = (r.type ?? "percentage").toLowerCase().startsWith("perc");
+        if (isPct) {
+          if (val > best) {
+            best = val;
+            isFixed = false;
+          }
+        } else if (best === 0 && val > 0) {
+          best = val;
+          isFixed = true;
+        }
+      }
+      for (const g of data?.commissionGroups ?? []) {
+        const val = Number(g.percentage ?? g.amount ?? 0);
+        const isPct =
+          g.percentage != null ||
+          (g.type ?? "").toLowerCase().startsWith("perc");
+        if (isPct) {
+          if (val > best) {
+            best = val;
+            isFixed = false;
+          }
+        } else if (best === 0 && val > 0) {
+          best = val;
+          isFixed = true;
+        }
+      }
+      if (best > 0) {
+        return {
+          cashbackType: isFixed ? "fixed" : "percent",
+          cashbackValue: best,
+        };
+      }
+      return null;
+    } catch {
+      return null;
+    }
+  }
+
+  async fetchOffersRaw(): Promise<unknown[]> {
+    if (!this.token || !this.publisherId) return [];
+    const res = await fetch(
+      `${AWIN_API}/publishers/${this.publisherId}/programmes?relationship=joined`,
+      { headers: this.headers() },
+    );
+    const data = await res.json();
+    const progs = (Array.isArray(data) ? data : [data]).slice(0, 3);
+    // דגימת programmedetails עבור המפרסם הראשון — לאימות מבנה שיעור העמלה.
+    let details: unknown = null;
+    const first = (progs[0] as { id?: number })?.id;
+    if (first) {
+      const dr = await fetch(
+        `${AWIN_API}/publishers/${this.publisherId}/programmedetails?advertiserId=${first}`,
+        { headers: this.headers() },
+      );
+      if (dr.ok) details = await dr.json();
+    }
+    return [{ programmes: progs, programmeDetails: details }];
   }
 
   async fetchCoupons(): Promise<NetworkCoupon[]> {
@@ -434,6 +514,45 @@ export class AwinNetwork implements AffiliateNetwork {
       networkTxnId: q("transactionId") ?? null,
     };
   }
+}
+
+/** ממפה sector של Awin (אנגלית) לקטגוריה בעברית; null אם לא זוהה. */
+function mapAwinCategory(sector?: string): string | null {
+  if (!sector) return null;
+  const s = sector.toLowerCase();
+  if (/fashion|cloth|apparel|shoe|footwear|jewel|watch|lingerie|accessor/.test(s))
+    return "אופנה";
+  if (/electron|tech|computer|gadget|mobile|phone|gaming/.test(s))
+    return "אלקטרוניקה";
+  if (
+    /travel|flight|hotel|holiday|parking|transfer|airport|car (hire|rental)|vacation|tourism/.test(
+      s,
+    )
+  )
+    return "טיסות ומלונות";
+  if (/beauty|cosmet|fragrance|perfume|skincare|makeup|hair/.test(s))
+    return "יופי וטיפוח";
+  if (/health|pharma|nutrition|supplement|wellness|medical|vitamin/.test(s))
+    return "בריאות וטבע";
+  if (/home|garden|furnitur|kitchen|diy|interior|decor/.test(s))
+    return "בית וריהוט";
+  if (/sport|fitness|outdoor|cycl|golf/.test(s)) return "ספורט";
+  if (/food|drink|wine|grocery|beverage|restaurant|meal/.test(s))
+    return "מזון ומשלוחים";
+  if (/kid|child|baby|toy|infant|nursery/.test(s)) return "ילדים ותינוקות";
+  if (/book|educat|cours|learn|stationery/.test(s)) return "ספרים";
+  if (/financ|insur|bank|loan|credit|mortgage|invest/.test(s))
+    return "פיננסים וביטוח";
+  if (
+    /telecom|broadband|software|hosting|vpn|subscription|utilit|service|streaming/.test(
+      s,
+    )
+  )
+    return "שירותים דיגיטליים";
+  if (/pet|animal/.test(s)) return "חיות מחמד";
+  if (/ticket|event|cinema|concert|experience|entertainment/.test(s))
+    return "פנאי ובידור";
+  return null;
 }
 
 /** מחלץ שיעור עמלה מ-commissionRange של Awin; ברירת מחדל 5% אם לא נמצא. */

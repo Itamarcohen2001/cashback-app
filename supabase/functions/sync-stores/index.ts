@@ -31,6 +31,24 @@ Deno.serve(async (req) => {
 
   // מושכים הצעות מכל הרשתות המוגדרות (Admitad + Awin וכו').
   const networks = getNetworks();
+
+  // מצב דיבאג: דגימת הצעות גולמית מרשת נבחרת (?sample=1[&network=awin]).
+  const reqUrl = new URL(req.url);
+  if (reqUrl.searchParams.get("sample") === "1") {
+    const which = (reqUrl.searchParams.get("network") ?? "").toLowerCase();
+    const net = networks.find(
+      (n) => (!which || n.name === which) && n.fetchOffersRaw,
+    );
+    if (net?.fetchOffersRaw) {
+      try {
+        return json({ ok: true, network: net.name, sample: await net.fetchOffersRaw() });
+      } catch (e) {
+        return json({ error: String(e instanceof Error ? e.message : e) }, 502);
+      }
+    }
+    return json({ ok: true, sample: [] });
+  }
+
   const offers: Array<NetworkOffer & { __network: string }> = [];
   const perNetwork: Record<string, number> = {};
   for (const net of networks) {
